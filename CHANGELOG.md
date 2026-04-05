@@ -2,6 +2,13 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.1.0] - 2025-04-05
+
+### 🚀 Mejoras de UX y UI
+- **Ordenamiento de Tablas**: Se añadió la funcionalidad de ordenar (Sort) todas las tablas al hacer clic en los encabezados.
+- **Simplificación General**: Se eliminó la columna **MEM** de la vista principal y los formularios globales. Ahora la memoria es un campo **exclusivamente personal** dentro de la lista de favoritos.
+- **Indicadores Visuales**: Se añadieron símbolos de ordenamiento (↕) y cursores interactivos en las tablas.
+
 ## [1.0.0] - 2024-04-05
 
 ### ✨ Funcionalidades Principales

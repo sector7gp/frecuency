@@ -178,19 +178,18 @@
                     <thead>
                         <tr>
                             <th></th>
-                            <th>Mem</th>
-                            <th>TX</th>
-                            <th>RX</th>
-                            <th>Mod</th>
-                            <th>SubT</th>
-                            <th>Señal</th>
-                            <th>Banda</th>
-                            <th>Estado</th>
-                            <th>Titular</th>
+                            <th onclick="sortTable('generalTable', 1)" style="cursor:pointer">TX ↕</th>
+                            <th onclick="sortTable('generalTable', 2)" style="cursor:pointer">RX ↕</th>
+                            <th onclick="sortTable('generalTable', 3)" style="cursor:pointer">Mod ↕</th>
+                            <th onclick="sortTable('generalTable', 4)" style="cursor:pointer">SubT ↕</th>
+                            <th onclick="sortTable('generalTable', 5)" style="cursor:pointer">Señal ↕</th>
+                            <th onclick="sortTable('generalTable', 6)" style="cursor:pointer">Banda ↕</th>
+                            <th onclick="sortTable('generalTable', 7)" style="cursor:pointer">Estado ↕</th>
+                            <th onclick="sortTable('generalTable', 8)" style="cursor:pointer">Titular ↕</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="generalTable">
                         <% data.forEach(row => { %>
                             <tr>
                                 <td>
@@ -198,7 +197,6 @@
                                         <%= row.es_favorito ? '★' : '☆' %>
                                     </button>
                                 </td>
-                                <td><%= row.mem %></td>
                                 <td><%= row.tx %></td>
                                 <td><%= row.rx %></td>
                                 <td><%= row.mod %></td>
@@ -225,16 +223,16 @@
                 <table>
                     <thead>
                         <tr>
-                            <th># Personal</th>
-                            <th>Señal</th>
-                            <th>TX</th>
-                            <th>RX</th>
-                            <th>SubT</th>
-                            <th>Titular</th>
+                            <th onclick="sortTable('favTable', 0)" style="cursor:pointer"># Personal ↕</th>
+                            <th onclick="sortTable('favTable', 1)" style="cursor:pointer">Señal ↕</th>
+                            <th onclick="sortTable('favTable', 2)" style="cursor:pointer">TX ↕</th>
+                            <th onclick="sortTable('favTable', 3)" style="cursor:pointer">RX ↕</th>
+                            <th onclick="sortTable('favTable', 4)" style="cursor:pointer">SubT ↕</th>
+                            <th onclick="sortTable('favTable', 5)" style="cursor:pointer">Titular ↕</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="favTable">
                         <% const favorites = data.filter(d => d.es_favorito); %>
                         <% if (favorites.length === 0) { %>
                             <tr><td colspan="7" style="text-align: center; padding: 2rem;">No tienes favoritos guardados.</td></tr>
@@ -267,14 +265,14 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Fecha</th>
-                                <th>Usuario</th>
-                                <th>Tipo</th>
+                                <th onclick="sortTable('revTable', 0)" style="cursor:pointer">Fecha ↕</th>
+                                <th onclick="sortTable('revTable', 1)" style="cursor:pointer">Usuario ↕</th>
+                                <th onclick="sortTable('revTable', 2)" style="cursor:pointer">Tipo ↕</th>
                                 <th>Datos Sugeridos</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="revTable">
                             <% if (solicitudes.length === 0) { %>
                                 <tr><td colspan="5" style="text-align: center; padding: 2rem;">No hay revisiones pendientes.</td></tr>
                             <% } else { %>
@@ -346,15 +344,15 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Nombre</th>
-                                <th>Usuario</th>
-                                <th>Correo</th>
-                                <th>Rol</th>
-                                <th>Fecha Alta</th>
+                                <th onclick="sortTable('userTable', 0)" style="cursor:pointer">Nombre ↕</th>
+                                <th onclick="sortTable('userTable', 1)" style="cursor:pointer">Usuario ↕</th>
+                                <th onclick="sortTable('userTable', 2)" style="cursor:pointer">Correo ↕</th>
+                                <th onclick="sortTable('userTable', 3)" style="cursor:pointer">Rol ↕</th>
+                                <th onclick="sortTable('userTable', 4)" style="cursor:pointer">Fecha Alta ↕</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="userTable">
                             <% usuarios_lista.forEach(u => { %>
                                 <tr>
                                     <td><%= u.nombre %></td>
@@ -400,7 +398,6 @@
         <div class="modal-content glass">
             <h3>Agregar Frecuencia</h3>
             <form action="/api/datos" method="POST" class="grid-form">
-                <div class="form-group"><label>MEM</label><input type="text" name="mem"></div>
                 <div class="form-group"><label>TX</label><input type="text" name="tx"></div>
                 <div class="form-group"><label>RX</label><input type="text" name="rx"></div>
                 <div class="form-group"><label>MOD</label><input type="text" name="mod"></div>
@@ -438,7 +435,6 @@
         <div class="modal-content glass">
             <h3>Editar Frecuencia</h3>
             <form id="editForm" method="POST" class="grid-form">
-                <div class="form-group"><label>MEM</label><input type="text" name="mem" id="edit_mem"></div>
                 <div class="form-group"><label>TX</label><input type="text" name="tx" id="edit_tx"></div>
                 <div class="form-group"><label>RX</label><input type="text" name="rx" id="edit_rx"></div>
                 <div class="form-group"><label>MOD</label><input type="text" name="mod" id="edit_mod"></div>
@@ -610,7 +606,6 @@
 
         function editRow(data) {
             document.getElementById('editForm').action = `/api/datos/edit/${data.id}`;
-            document.getElementById('edit_mem').value = data.mem || '';
             document.getElementById('edit_tx').value = data.tx || '';
             document.getElementById('edit_rx').value = data.rx || '';
             document.getElementById('edit_mod').value = data.mod || '';
@@ -622,6 +617,43 @@
             document.getElementById('edit_ciudad').value = data.ciudad || '';
             document.getElementById('edit_id_provincia').value = data.id_provincia || '';
             openModal('editModal');
+        }
+
+        function sortTable(tableId, n) {
+            const table = document.getElementById(tableId);
+            let rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            switching = true;
+            dir = "asc"; 
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 0; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    if (dir == "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount ++;      
+                } else {
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
         }
 
         window.onclick = function(event) {
