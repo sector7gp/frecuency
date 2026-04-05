@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,52 +19,66 @@
             --text: #f8fafc;
             --text-muted: #94a3b8;
         }
+
         .modal {
             display: none;
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
             justify-content: center;
             align-items: center;
             z-index: 1000;
             backdrop-filter: blur(5px);
         }
+
         .modal-content {
             width: 95%;
             max-width: 550px;
             padding: 1.25rem 1.75rem;
             max-height: 95vh;
             overflow-y: auto;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
         .grid-form {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 0.75rem;
         }
+
         .form-group {
             margin-bottom: 0.5rem;
         }
+
         .form-group label {
             margin-bottom: 0.25rem;
             font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
-        .form-group input, .form-group select {
+
+        .form-group input,
+        .form-group select {
             padding: 0.5rem 0.75rem;
             font-size: 0.9rem;
         }
-        .full-width { grid-column: span 2; }
-        
+
+        .full-width {
+            grid-column: span 2;
+        }
+
         /* Tabs */
         .tabs {
             display: flex;
             gap: 1rem;
             margin-bottom: 2rem;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             padding-bottom: 0.5rem;
         }
+
         .tab-btn {
             background: none;
             border: none;
@@ -74,17 +89,36 @@
             transition: all 0.3s;
             border-radius: 0.5rem;
         }
-        .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+
+        .tab-btn:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
         .tab-btn.active {
             color: var(--primary);
             background: rgba(99, 102, 241, 0.1);
         }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-        
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .alert {
@@ -96,8 +130,18 @@
             align-items: center;
             gap: 0.75rem;
         }
-        .alert-info { background: rgba(99, 102, 241, 0.2); border: 1px solid var(--primary); color: #c7d2fe; }
-        .alert-success { background: rgba(34, 197, 94, 0.2); border: 1px solid var(--success); color: #bbf7d0; }
+
+        .alert-info {
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid var(--primary);
+            color: #c7d2fe;
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid var(--success);
+            color: #bbf7d0;
+        }
 
         .fav-btn {
             background: none;
@@ -108,385 +152,604 @@
             padding: 0;
             margin-right: 0.5rem;
         }
-        .fav-btn:hover { transform: scale(1.2); }
-        .fav-btn.active { color: #facc15; }
-        .fav-btn.inactive { color: var(--text-muted); opacity: 0.5; }
+
+        .fav-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .fav-btn.active {
+            color: #facc15;
+        }
+
+        .fav-btn.inactive {
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
 
         .diff-tag {
             font-size: 0.7rem;
             padding: 0.1rem 0.4rem;
             border-radius: 0.25rem;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             color: var(--text-muted);
         }
     </style>
 </head>
+
 <body>
     <header class="header glass" style="border-radius: 0; border-top: none; border-left: none; border-right: none;">
-        <div style="font-weight: 700; font-size: 1.5rem; color: var(--accent);">Frecuency</div>
+        <div style="font-weight: 700; font-size: 1.5rem; color: var(--accent);">Frecuency Management System</div>
         <div style="display: flex; align-items: center; gap: 1.5rem;">
             <div style="text-align: right;">
-                <div style="font-weight: 600;"><%= user.nombre %></div>
-                <div style="font-size: 0.75rem; color: var(--text-muted);"><%= user.rol.toUpperCase() %></div>
+                <div style="font-weight: 600;">
+                    <%= user.nombre %>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">
+                    <%= user.rol.toUpperCase() %>
+                </div>
             </div>
-            <a href="/logout" class="btn" style="width: auto; padding: 0.5rem 1rem; background: rgba(255, 255, 255, 0.1);">Salir</a>
+            <a href="/logout" class="btn"
+                style="width: auto; padding: 0.5rem 1rem; background: rgba(255, 255, 255, 0.1);">Salir</a>
         </div>
     </header>
 
     <main class="container">
-        <% if (notificaciones && notificaciones.length > 0) { %>
-            <div id="notification-area" class="glass" style="padding: 1.25rem; margin-bottom: 2rem; border-left: 4px solid var(--primary); animation: fadeIn 0.5s ease;">
+        <% if (notificaciones && notificaciones.length> 0) { %>
+            <div id="notification-area" class="glass"
+                style="padding: 1.25rem; margin-bottom: 2rem; border-left: 4px solid var(--primary); animation: fadeIn 0.5s ease;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h4 style="font-size: 0.75rem; color: var(--primary); letter-spacing: 0.1em; text-transform: uppercase;">Notificaciones</h4>
-                    <button onclick="clearNotifications()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.75rem; text-decoration: underline;">Limpiar</button>
+                    <h4
+                        style="font-size: 0.75rem; color: var(--primary); letter-spacing: 0.1em; text-transform: uppercase;">
+                        Notificaciones</h4>
+                    <button onclick="clearNotifications()"
+                        style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.75rem; text-decoration: underline;">Limpiar</button>
                 </div>
-                <% notificaciones.forEach(n => { %>
+                <% notificaciones.forEach(n=> { %>
                     <div style="font-size: 0.9rem; padding: 0.75rem 0; border-top: 1px solid rgba(255,255,255,0.05);">
-                        <span style="color: var(--text-muted); font-size: 0.7rem; margin-right: 0.75rem;"><%= new Date(n.fecha).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %></span>
+                        <span style="color: var(--text-muted); font-size: 0.7rem; margin-right: 0.75rem;">
+                            <%= new Date(n.fecha).toLocaleTimeString([], {hour: '2-digit' , minute:'2-digit'}) %>
+                        </span>
                         <%= n.mensaje %>
                     </div>
-                <% }) %>
+                    <% }) %>
             </div>
-        <% } %>
-
-        <% if (typeof msg !== 'undefined' || (typeof req !== 'undefined' && req.query.msg)) { %>
-            <% const m = (typeof msg !== 'undefined') ? msg : req.query.msg; %>
-            <div id="flash-message">
-                <% if (m === 'pendiente') { %>
-                    <div class="alert alert-info">
-                        <span>✓ Solicitud enviada correctamente. Un administrador la revisará pronto.</span>
-                        <button class="close-alert" onclick="dismissAlert()">&times;</button>
-                    </div>
-                <% } else if (m === 'aprobado') { %>
-                    <div class="alert alert-success">
-                        <span>✓ Solicitud aprobada y aplicada.</span>
-                        <button class="close-alert" onclick="dismissAlert()">&times;</button>
-                    </div>
-                <% } else if (m === 'actualizado') { %>
-                    <div class="alert alert-success">
-                        <span>✓ Registro actualizado correctamente.</span>
-                        <button class="close-alert" onclick="dismissAlert()">&times;</button>
-                    </div>
-                <% } else if (m === 'deleted') { %>
-                    <div class="alert alert-success">
-                        <span>✓ Registro eliminado correctamente.</span>
-                        <button class="close-alert" onclick="dismissAlert()">&times;</button>
-                    </div>
-                <% } %>
-            </div>
-        <% } %>
-
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <h2>Frecuencias</h2>
-            <div style="display: flex; gap: 1rem;">
-                <% if (user.rol === 'admin') { %>
-                    <button class="btn btn-secondary" onclick="openModal('importModal')">📥 Importar CSV</button>
-                <% } %>
-                <button class="btn btn-info" onclick="openModal('addPrivateModal')">➕ Nueva Privada</button>
-                <button class="btn btn-success" onclick="openModal('addModal')">+ Sugerir Pública</button>
-            </div>
-        </div>
-
-        <div class="tabs">
-            <button class="tab-btn active" id="tab-btn-general" onclick="showTab('general')">General</button>
-            <button class="tab-btn" id="tab-btn-mis-frecuencias" onclick="showTab('mis-frecuencias')">Mis Frecuencias</button>
-            <button class="tab-btn" id="tab-btn-favoritos" onclick="showTab('favoritos')">Mi Plan de Frecuencias</button>
-            <% if (user.rol === 'admin') { %>
-                <button class="tab-btn" id="tab-btn-revisiones" onclick="showTab('revisiones')">Revisiones (<%= solicitudes.length %>)</button>
-                <button class="tab-btn" id="tab-btn-usuarios" onclick="showTab('usuarios')">Usuarios</button>
             <% } %>
-        </div>
 
-        <div id="tab-general" class="tab-content active">
-            <div class="table-container glass">
-                <table>
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th onclick="sortTable('generalTable', 1)" style="cursor:pointer">Titular <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('generalTable', 2)" style="cursor:pointer">Señal <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('generalTable', 3)" style="cursor:pointer">TX <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('generalTable', 4)" style="cursor:pointer">RX <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('generalTable', 5)" style="cursor:pointer">Mod <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('generalTable', 6)" style="cursor:pointer">SubT <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('generalTable', 7)" style="cursor:pointer">Banda <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('generalTable', 8)" style="cursor:pointer">Estado <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('generalTable', 9)" style="cursor:pointer">Provincia <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('generalTable', 10)" style="cursor:pointer">Ciudad <span class="sort-icon">↕</span></th>
-                        </tr>
-                    </thead>
-                    <tbody id="generalTable">
-                        <% data.filter(d => !d.es_privada).forEach(row => { %>
-                            <tr>
-                                <td>
-                                    <button class="fav-btn <%= row.es_favorito ? 'active' : 'inactive' %>" onclick="toggleFavorite(<%= row.id %>)">
-                                        <%= row.es_favorito ? '★' : '☆' %>
-                                    </button>
-                                </td>
-                                <td>
-                                    <button onclick='editRow(<%= JSON.stringify(row) %>)' style="background:none; border:none; color:var(--accent); cursor:pointer; text-align:left; padding:0; font-weight:600; text-decoration:underline;">
-                                        <%= row.titular %>
-                                    </button>
-                                </td>
-                                <td><strong><%= row.signal %></strong></td>
-                                <td><%= row.tx %></td>
-                                <td><%= row.rx %></td>
-                                <td><%= row.mod %></td>
-                                <td><%= row.subt %></td>
-                                <td><%= row.banda %></td>
-                                <td><span class="badge badge-<%= row.estado_color %>" style="font-size:0.7rem;"><%= row.estado_nombre %></span></td>
-                                <td style="font-size:0.8rem;"><%= row.provincia_nombre %></td>
-                                <td style="font-size:0.8rem;"><%= row.ciudad %></td>
-                            </tr>
-                        <% }) %>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="tab-mis-frecuencias" class="tab-content">
-            <div class="table-container glass">
-                <table>
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th onclick="sortTable('privateTable', 1)" style="cursor:pointer">Titular <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('privateTable', 2)" style="cursor:pointer">Señal <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('privateTable', 3)" style="cursor:pointer">TX <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('privateTable', 4)" style="cursor:pointer">RX <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('privateTable', 5)" style="cursor:pointer">Mod <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('privateTable', 6)" style="cursor:pointer">SubT <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('privateTable', 7)" style="cursor:pointer">Banda <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('privateTable', 8)" style="cursor:pointer">Estado <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('privateTable', 9)" style="cursor:pointer">Provincia <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('privateTable', 10)" style="cursor:pointer">Ciudad <span class="sort-icon">↕</span></th>
-                        </tr>
-                    </thead>
-                    <tbody id="privateTable">
-                        <% const misPrivadas = data.filter(d => d.es_privada && d.id_usuario_creador === user.id); %>
-                        <% if (misPrivadas.length === 0) { %>
-                            <tr><td colspan="6" style="text-align: center; padding: 2rem;">No tienes frecuencias privadas. ¡Crea una con el botón de arriba!</td></tr>
-                        <% } else { %>
-                            <% misPrivadas.forEach(row => { %>
-                                <tr>
-                                    <td>
-                                        <button class="fav-btn <%= row.es_favorito ? 'active' : 'inactive' %>" onclick="toggleFavorite(<%= row.id %>)">
-                                            <%= row.es_favorito ? '★' : '☆' %>
-                                        </button>
-                                    </td>
-                                    <td>
-                                        <button onclick='editRow(<%= JSON.stringify(row) %>)' style="background:none; border:none; color:var(--accent); cursor:pointer; text-align:left; padding:0; font-weight:600; text-decoration:underline;">
-                                            <%= row.titular || 'Sin Titular' %>
-                                        </button>
-                                        <form action="/api/datos/hacer-publica/<%= row.id %>" method="POST" style="display:inline; margin-left: 0.5rem;">
-                                            <button type="submit" class="btn btn-sm btn-info" title="Hacer pública" style="padding: 0.1rem 0.3rem; font-size: 0.6rem;">🌍</button>
-                                        </form>
-                                    </td>
-                                    <td><strong><%= row.signal %></strong></td>
-                                    <td><%= row.tx %></td>
-                                    <td><%= row.rx %></td>
-                                    <td><%= row.mod %></td>
-                                    <td><%= row.subt %></td>
-                                    <td><%= row.banda %></td>
-                                    <td><span class="badge badge-<%= row.estado_color %>" style="font-size:0.7rem;"><%= row.estado_nombre %></span></td>
-                                    <td style="font-size: 0.8rem;"><%= row.provincia_nombre %></td>
-                                    <td style="font-size: 0.8rem;"><%= row.ciudad %></td>
-                                </tr>
-                            <% }) %>
-                        <% } %>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="tab-favoritos" class="tab-content">
-            <div class="table-container glass">
-                <table>
-                    <thead>
-                        <tr>
-                            <th onclick="sortTable('favTable', 0)" style="cursor:pointer">Titular <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('favTable', 1)" style="cursor:pointer">Señal <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('favTable', 2)" style="cursor:pointer">TX <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('favTable', 3)" style="cursor:pointer">RX <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('favTable', 4)" style="cursor:pointer">Mod <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('favTable', 5)" style="cursor:pointer">SubT <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('favTable', 6)" style="cursor:pointer">Banda <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('favTable', 7)" style="cursor:pointer">Estado <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('favTable', 8)" style="cursor:pointer">Provincia <span class="sort-icon">↕</span></th>
-                            <th onclick="sortTable('favTable', 9)" style="cursor:pointer"># Mem <span class="sort-icon">↕</span></th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="favTable">
-                        <% const favorites = data.filter(d => d.es_favorito); %>
-                        <% if (favorites.length === 0) { %>
-                            <tr><td colspan="7" style="text-align: center; padding: 2rem;">No tienes favoritos guardados.</td></tr>
-                        <% } else { %>
-                            <% favorites.forEach(row => { %>
-                                <tr>
-                                    <td>
-                                        <button onclick='editRow(<%= JSON.stringify(row) %>)' style="background:none; border:none; color:var(--accent); cursor:pointer; text-align:left; padding:0; font-weight:600; text-decoration:underline;">
-                                            <%= row.titular %>
-                                        </button>
-                                    </td>
-                                    <td><strong><%= row.signal %></strong></td>
-                                    <td><%= row.tx %></td>
-                                    <td><%= row.rx %></td>
-                                    <td><%= row.mod %></td>
-                                    <td><%= row.subt %></td>
-                                    <td><%= row.banda %></td>
-                                    <td><span class="badge badge-<%= row.estado_color %>" style="font-size:0.7rem;"><%= row.estado_nombre %></span></td>
-                                    <td style="font-size:0.8rem;"><%= row.provincia_nombre %></td>
-                                    <td>
-                                        <span style="font-weight: 700; color: var(--accent); margin-right: 0.5rem;"><%= row.memoria_personalizada || row.mem || '-' %></span>
-                                        <button class="btn btn-sm btn-info" onclick="openMemModal(<%= row.id %>, '<%= row.memoria_personalizada || '' %>')" style="padding: 0.1rem 0.3rem;">✎</button>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-danger" onclick="toggleFavorite(<%= row.id %>)" style="padding: 0.2rem 0.4rem;">✕</button>
-                                    </td>
-                                </tr>
-                            <% }) %>
-                        <% } %>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <% if (user.rol === 'admin') { %>
-            <div id="tab-revisiones" class="tab-content">
-                <div class="table-container glass">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th onclick="sortTable('revTable', 0)" style="cursor:pointer">Fecha ↕</th>
-                                <th onclick="sortTable('revTable', 1)" style="cursor:pointer">Usuario ↕</th>
-                                <th onclick="sortTable('revTable', 2)" style="cursor:pointer">Tipo ↕</th>
-                                <th>Datos Sugeridos</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="revTable">
-                            <% if (solicitudes.length === 0) { %>
-                                <tr><td colspan="5" style="text-align: center; padding: 2rem;">No hay revisiones pendientes.</td></tr>
-                            <% } else { %>
-                                <% solicitudes.forEach(sol => { %>
-                                    <% const datos = JSON.parse(sol.datos_json); %>
-                                    <% 
-                                        const fields = [
-                                            {key: 'mem', label: 'MEM'},
-                                            {key: 'tx', label: 'TX'},
-                                            {key: 'rx', label: 'RX'},
-                                            {key: 'mod', label: 'MOD'},
-                                            {key: 'subt', label: 'SubT'},
-                                            {key: 'signal', label: 'Señal'},
-                                            {key: 'banda', label: 'Banda'},
-                                            {key: 'titular', label: 'Titular'},
-                                            {key: 'ciudad', label: 'Ciudad'}
-                                        ]; 
-                                    %>
-                                    <tr>
-                                        <td style="font-size: 0.75rem;"><%= new Date(sol.fecha_solicitud).toLocaleString() %></td>
-                                        <td><%= sol.usuario_nombre %></td>
-                                        <td>
-                                            <span class="badge" style="background: <%= sol.tipo === 'alta' ? 'rgba(34, 197, 129, 0.2)' : (sol.tipo === 'edicion' ? 'rgba(245, 158, 11, 0.2)' : (sol.tipo === 'publicar' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(239, 68, 68, 0.2)')) %>; color: <%= sol.tipo === 'alta' ? '#bbf7d0' : (sol.tipo === 'edicion' ? '#fde68a' : (sol.tipo === 'publicar' ? '#bfdbfe' : '#fecaca')) %>;">
-                                                <%= sol.tipo.toUpperCase() %>
-                                            </span>
-                                        </td>
-                                        <td style="font-size: 0.85rem;">
-                                            <% if (sol.tipo === 'edicion') { %>
-                                                <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                                                    <% fields.forEach(f => { %>
-                                                        <% if (String(datos[f.key] || '') !== String(sol['old_' + f.key] || '')) { %>
-                                                            <div style="background: rgba(255,255,255,0.03); padding: 0.25rem 0.5rem; border-radius: 0.25rem;">
-                                                                <span class="diff-tag"><%= f.label %></span>
-                                                                <span style="color: var(--danger); text-decoration: line-through; margin-right: 0.5rem;"><%= sol['old_' + f.key] || '(vacío)' %></span>
-                                                                <span style="color: var(--success); font-weight: 700;"><%= datos[f.key] || '(vacío)' %></span>
-                                                            </div>
-                                                        <% } %>
-                                                    <% }) %>
-                                                </div>
-                                            <% } else if (sol.tipo === 'publicar') { %>
-                                                <div style="color: var(--primary); font-weight: 700;">Solicitud de Publicación</div>
-                                                <div><strong><%= sol.old_signal %></strong> (<%= sol.old_tx %> / <%= sol.old_rx %>)</div>
-                                            <% } else { %>
-                                                <div><strong><%= datos.signal %></strong> (<%= datos.tx %> / <%= datos.rx %>)</div>
-                                                <div style="color: var(--text-muted); font-size: 0.75rem;">Titular: <%= datos.titular %></div>
+                <% if (typeof msg !=='undefined' || (typeof req !=='undefined' && req.query.msg)) { %>
+                    <% const m=(typeof msg !=='undefined' ) ? msg : req.query.msg; %>
+                        <div id="flash-message">
+                            <% if (m==='pendiente' ) { %>
+                                <div class="alert alert-info">
+                                    <span>✓ Solicitud enviada correctamente. Un administrador la revisará pronto.</span>
+                                    <button class="close-alert" onclick="dismissAlert()">&times;</button>
+                                </div>
+                                <% } else if (m==='aprobado' ) { %>
+                                    <div class="alert alert-success">
+                                        <span>✓ Solicitud aprobada y aplicada.</span>
+                                        <button class="close-alert" onclick="dismissAlert()">&times;</button>
+                                    </div>
+                                    <% } else if (m==='actualizado' ) { %>
+                                        <div class="alert alert-success">
+                                            <span>✓ Registro actualizado correctamente.</span>
+                                            <button class="close-alert" onclick="dismissAlert()">&times;</button>
+                                        </div>
+                                        <% } else if (m==='deleted' ) { %>
+                                            <div class="alert alert-success">
+                                                <span>✓ Registro eliminado correctamente.</span>
+                                                <button class="close-alert" onclick="dismissAlert()">&times;</button>
+                                            </div>
                                             <% } %>
-                                        </td>
-                                        <td class="actions-cell">
-                                            <form action="/api/admin/solicitudes/<%= sol.id %>/aprobar" method="POST" style="display:inline">
-                                                <button type="submit" class="btn btn-sm btn-success">Aprobar</button>
-                                            </form>
-                                            <form action="/api/admin/solicitudes/<%= sol.id %>/rechazar" method="POST" style="display:inline">
-                                                <button type="submit" class="btn btn-sm btn-danger" title="Rechazar">X</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                <% }) %>
-                            <% } %>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        <% } %>
+                        </div>
+                        <% } %>
 
-        <% if (user.rol === 'admin') { %>
-            <div id="tab-usuarios" class="tab-content">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h3>Gestión de Usuarios</h3>
-                    <button class="btn btn-success" onclick="openModal('addUserModal')">+ Nuevo Usuario</button>
-                </div>
-                <div class="table-container glass">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th onclick="sortTable('userTable', 0)" style="cursor:pointer">Nombre ↕</th>
-                                <th onclick="sortTable('userTable', 1)" style="cursor:pointer">Usuario ↕</th>
-                                <th onclick="sortTable('userTable', 2)" style="cursor:pointer">Correo ↕</th>
-                                <th onclick="sortTable('userTable', 3)" style="cursor:pointer">Rol ↕</th>
-                                <th onclick="sortTable('userTable', 4)" style="cursor:pointer">Fecha Alta ↕</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="userTable">
-                            <% usuarios_lista.forEach(u => { %>
-                                <tr>
-                                    <td><%= u.nombre %></td>
-                                    <td><strong><%= u.usuario %></strong></td>
-                                    <td><%= u.correo %></td>
-                                    <td>
-                                        <span class="badge" style="background: <%= u.rol === 'admin' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(148, 163, 184, 0.2)' %>; color: <%= u.rol === 'admin' ? '#c7d2fe' : '#94a3b8' %>;">
-                                            <%= u.rol.toUpperCase() %>
-                                        </span>
-                                    </td>
-                                    <td style="font-size: 0.75rem;"><%= new Date(u.fecha_alta).toLocaleDateString() %></td>
-                                    <td class="actions-cell">
-                                        <button class="btn btn-sm btn-secondary" onclick='editUserRow(<%= JSON.stringify(u) %>)'>✎</button>
-                                        <% if (u.id !== user.id) { %>
-                                            <form action="/api/admin/usuarios/delete/<%= u.id %>" method="POST" onsubmit="return confirm('¿Eliminar usuario?')">
-                                                <button class="btn btn-sm btn-danger">🗑</button>
-                                            </form>
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                                <h2>Frecuencias</h2>
+                                <div style="display: flex; gap: 1rem;">
+                                    <% if (user.rol==='admin' ) { %>
+                                        <button class="btn btn-secondary" onclick="openModal('importModal')">📥 Importar
+                                            CSV</button>
                                         <% } %>
-                                    </td>
-                                </tr>
-                            <% %>
-                            <% }) %>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        <% } %>
-        
-        <footer style="margin-top: 4rem; padding: 2rem 0; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; color: var(--text-muted); font-size: 0.85rem;">
-            <p>© 2025 Frecuency Management System - v1.4.1</p>
-            <p style="margin-top: 0.5rem;">Desarrollado con ❤️ por <strong>sector7gp</strong></p>
-            <p style="margin-top: 1rem;">
-                <a href="https://github.com/sector7gp/frecuency" target="_blank" style="color: var(--primary); text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
-                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 496 512" height="1.2em" width="1.2em" xmlns="http://www.w3.org/2000/svg"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.4 2.3 17.2-5.1 17.2-12.2 0-5.7-.2-20.5-.3-40.2-66.9 14.4-80.6-32.9-80.6-32.9-11-28-26.9-35.4-26.9-35.4-21.8-14.9 1.7-14.5 1.7-14.5 24.2 1.6 37 24.8 37 24.8 21.5 37 54.8 26.3 68.1 20.1 2.2-15.5 8.4-26.3 15.3-32.4-53.5-6.2-109.8-26.7-109.8-119.3 0-26.4 9.3-48 24.5-64.5-2.5-6.1-10.6-30.6 2.4-63.6 0 0 20.3-6.5 66.2 24.7 19.3-5.4 40-8.1 60.6-8.1 20.6 0 41.3 2.7 60.6 8.1 45.9-31.2 66.2-24.7 66.2-24.7 13 33 4.9 57.5 2.4 63.6 15.2 16.5 24.5 38.1 24.5 64.5 0 92.7-56.3 113-110.1 119.1 8.7 7.4 16.3 22.3 16.3 45 0 32.5-.3 58.7-.3 66.7 0 7.2 4.8 15.6 17.3 12.1C426.2 457.8 496 362.9 496 252 496 113.3 389.9 8 244.8 8zM108.5 383.9c-.8 1.6.5 3.5 2.5 4.1 1.9.8 4.4-.3 5.1-1.9 1-1.6-.3-3.5-2.4-4.1-2-.7-4.4.2-5.1 1.9zm-8.8-5.7c-1.4 1.1-.3 3.1 2 4.1 2.7 1.2 5.4 1.2 6.5-.1 1.1-1.1.2-3.1-2.1-4.1-2.8-1.2-5.5-1.1-6.4.1zm-8.3-9.5c-1.6 1.1-1.5 3.3.3 4.8 1.8 1.6 4.6 1.8 6.1.6 1.7-1.1 1.4-3.4-.4-4.8-1.8-1.7-4.6-1.9-6-1zm-11.7-11.7c-2 1.1-2.5 3.3-1.1 5 1.4 1.7 4.1 1.8 6.1.8 2-1 2.5-3.2 1.1-5-1.4-1.7-4.1-1.8-6.1-.8z"></path></svg>
-                    GitHub Repository
-                </a>
-            </p>
-        </footer>
+                                            <button class="btn btn-info" onclick="openModal('addPrivateModal')">➕ Nueva
+                                                Privada</button>
+                                            <button class="btn btn-success" onclick="openModal('addModal')">+ Sugerir
+                                                Pública</button>
+                                </div>
+                            </div>
+
+                            <div class="tabs">
+                                <button class="tab-btn active" id="tab-btn-general"
+                                    onclick="showTab('general')">General</button>
+                                <button class="tab-btn" id="tab-btn-mis-frecuencias"
+                                    onclick="showTab('mis-frecuencias')">Mis Frecuencias</button>
+                                <button class="tab-btn" id="tab-btn-favoritos" onclick="showTab('favoritos')">Mi Plan de
+                                    Frecuencias</button>
+                                <% if (user.rol==='admin' ) { %>
+                                    <button class="tab-btn" id="tab-btn-revisiones"
+                                        onclick="showTab('revisiones')">Revisiones (<%= solicitudes.length %>)</button>
+                                    <button class="tab-btn" id="tab-btn-usuarios"
+                                        onclick="showTab('usuarios')">Usuarios</button>
+                                    <% } %>
+                            </div>
+
+                            <div id="tab-general" class="tab-content active">
+                                <div class="table-container glass">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th onclick="sortTable('generalTable', 1)" style="cursor:pointer">
+                                                    Titular <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('generalTable', 2)" style="cursor:pointer">Señal
+                                                    <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('generalTable', 3)" style="cursor:pointer">TX
+                                                    <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('generalTable', 4)" style="cursor:pointer">RX
+                                                    <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('generalTable', 5)" style="cursor:pointer">Mod
+                                                    <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('generalTable', 6)" style="cursor:pointer">SubT
+                                                    <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('generalTable', 7)" style="cursor:pointer">Banda
+                                                    <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('generalTable', 8)" style="cursor:pointer">Estado
+                                                    <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('generalTable', 9)" style="cursor:pointer">
+                                                    Provincia <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('generalTable', 10)" style="cursor:pointer">
+                                                    Ciudad <span class="sort-icon">↕</span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="generalTable">
+                                            <% data.filter(d=> !d.es_privada).forEach(row => { %>
+                                                <tr>
+                                                    <td>
+                                                        <button
+                                                            class="fav-btn <%= row.es_favorito ? 'active' : 'inactive' %>"
+                                                            onclick="toggleFavorite(<%= row.id %>)">
+                                                            <%= row.es_favorito ? '★' : '☆' %>
+                                                        </button>
+                                                    </td>
+                                                    <td>
+                                                        <button onclick='editRow(<%= JSON.stringify(row) %>)'
+                                                            style="background:none; border:none; color:var(--accent); cursor:pointer; text-align:left; padding:0; font-weight:600; text-decoration:underline;">
+                                                            <%= row.titular %>
+                                                        </button>
+                                                    </td>
+                                                    <td><strong>
+                                                            <%= row.signal %>
+                                                        </strong></td>
+                                                    <td>
+                                                        <%= row.tx %>
+                                                    </td>
+                                                    <td>
+                                                        <%= row.rx %>
+                                                    </td>
+                                                    <td>
+                                                        <%= row.mod %>
+                                                    </td>
+                                                    <td>
+                                                        <%= row.subt %>
+                                                    </td>
+                                                    <td>
+                                                        <%= row.banda %>
+                                                    </td>
+                                                    <td><span class="badge badge-<%= row.estado_color %>"
+                                                            style="font-size:0.7rem;">
+                                                            <%= row.estado_nombre %>
+                                                        </span></td>
+                                                    <td style="font-size:0.8rem;">
+                                                        <%= row.provincia_nombre %>
+                                                    </td>
+                                                    <td style="font-size:0.8rem;">
+                                                        <%= row.ciudad %>
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div id="tab-mis-frecuencias" class="tab-content">
+                                <div class="table-container glass">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th onclick="sortTable('privateTable', 1)" style="cursor:pointer">
+                                                    Titular <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('privateTable', 2)" style="cursor:pointer">Señal
+                                                    <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('privateTable', 3)" style="cursor:pointer">TX
+                                                    <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('privateTable', 4)" style="cursor:pointer">RX
+                                                    <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('privateTable', 5)" style="cursor:pointer">Mod
+                                                    <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('privateTable', 6)" style="cursor:pointer">SubT
+                                                    <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('privateTable', 7)" style="cursor:pointer">Banda
+                                                    <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('privateTable', 8)" style="cursor:pointer">Estado
+                                                    <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('privateTable', 9)" style="cursor:pointer">
+                                                    Provincia <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('privateTable', 10)" style="cursor:pointer">
+                                                    Ciudad <span class="sort-icon">↕</span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="privateTable">
+                                            <% const misPrivadas=data.filter(d=> d.es_privada && d.id_usuario_creador
+                                                === user.id); %>
+                                                <% if (misPrivadas.length===0) { %>
+                                                    <tr>
+                                                        <td colspan="6" style="text-align: center; padding: 2rem;">No
+                                                            tienes frecuencias privadas. ¡Crea una con el botón de
+                                                            arriba!</td>
+                                                    </tr>
+                                                    <% } else { %>
+                                                        <% misPrivadas.forEach(row=> { %>
+                                                            <tr>
+                                                                <td>
+                                                                    <button
+                                                                        class="fav-btn <%= row.es_favorito ? 'active' : 'inactive' %>"
+                                                                        onclick="toggleFavorite(<%= row.id %>)">
+                                                                        <%= row.es_favorito ? '★' : '☆' %>
+                                                                    </button>
+                                                                </td>
+                                                                <td>
+                                                                    <button
+                                                                        onclick='editRow(<%= JSON.stringify(row) %>)'
+                                                                        style="background:none; border:none; color:var(--accent); cursor:pointer; text-align:left; padding:0; font-weight:600; text-decoration:underline;">
+                                                                        <%= row.titular || 'Sin Titular' %>
+                                                                    </button>
+                                                                    <form
+                                                                        action="/api/datos/hacer-publica/<%= row.id %>"
+                                                                        method="POST"
+                                                                        style="display:inline; margin-left: 0.5rem;">
+                                                                        <button type="submit"
+                                                                            class="btn btn-sm btn-info"
+                                                                            title="Hacer pública"
+                                                                            style="padding: 0.1rem 0.3rem; font-size: 0.6rem;">🌍</button>
+                                                                    </form>
+                                                                </td>
+                                                                <td><strong>
+                                                                        <%= row.signal %>
+                                                                    </strong></td>
+                                                                <td>
+                                                                    <%= row.tx %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= row.rx %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= row.mod %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= row.subt %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= row.banda %>
+                                                                </td>
+                                                                <td><span class="badge badge-<%= row.estado_color %>"
+                                                                        style="font-size:0.7rem;">
+                                                                        <%= row.estado_nombre %>
+                                                                    </span></td>
+                                                                <td style="font-size: 0.8rem;">
+                                                                    <%= row.provincia_nombre %>
+                                                                </td>
+                                                                <td style="font-size: 0.8rem;">
+                                                                    <%= row.ciudad %>
+                                                                </td>
+                                                            </tr>
+                                                            <% }) %>
+                                                                <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div id="tab-favoritos" class="tab-content">
+                                <div class="table-container glass">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th onclick="sortTable('favTable', 0)" style="cursor:pointer">Titular
+                                                    <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('favTable', 1)" style="cursor:pointer">Señal
+                                                    <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('favTable', 2)" style="cursor:pointer">TX <span
+                                                        class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('favTable', 3)" style="cursor:pointer">RX <span
+                                                        class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('favTable', 4)" style="cursor:pointer">Mod <span
+                                                        class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('favTable', 5)" style="cursor:pointer">SubT <span
+                                                        class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('favTable', 6)" style="cursor:pointer">Banda
+                                                    <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('favTable', 7)" style="cursor:pointer">Estado
+                                                    <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('favTable', 8)" style="cursor:pointer">Provincia
+                                                    <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('favTable', 9)" style="cursor:pointer"># Mem
+                                                    <span class="sort-icon">↕</span></th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="favTable">
+                                            <% const favorites=data.filter(d=> d.es_favorito); %>
+                                                <% if (favorites.length===0) { %>
+                                                    <tr>
+                                                        <td colspan="7" style="text-align: center; padding: 2rem;">No
+                                                            tienes favoritos guardados.</td>
+                                                    </tr>
+                                                    <% } else { %>
+                                                        <% favorites.forEach(row=> { %>
+                                                            <tr>
+                                                                <td>
+                                                                    <button
+                                                                        onclick='editRow(<%= JSON.stringify(row) %>)'
+                                                                        style="background:none; border:none; color:var(--accent); cursor:pointer; text-align:left; padding:0; font-weight:600; text-decoration:underline;">
+                                                                        <%= row.titular %>
+                                                                    </button>
+                                                                </td>
+                                                                <td><strong>
+                                                                        <%= row.signal %>
+                                                                    </strong></td>
+                                                                <td>
+                                                                    <%= row.tx %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= row.rx %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= row.mod %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= row.subt %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= row.banda %>
+                                                                </td>
+                                                                <td><span class="badge badge-<%= row.estado_color %>"
+                                                                        style="font-size:0.7rem;">
+                                                                        <%= row.estado_nombre %>
+                                                                    </span></td>
+                                                                <td style="font-size:0.8rem;">
+                                                                    <%= row.provincia_nombre %>
+                                                                </td>
+                                                                <td>
+                                                                    <span
+                                                                        style="font-weight: 700; color: var(--accent); margin-right: 0.5rem;">
+                                                                        <%= row.memoria_personalizada || row.mem || '-'
+                                                                            %>
+                                                                    </span>
+                                                                    <button class="btn btn-sm btn-info"
+                                                                        onclick="openMemModal(<%= row.id %>, '<%= row.memoria_personalizada || '' %>')"
+                                                                        style="padding: 0.1rem 0.3rem;">✎</button>
+                                                                </td>
+                                                                <td>
+                                                                    <button class="btn btn-sm btn-danger"
+                                                                        onclick="toggleFavorite(<%= row.id %>)"
+                                                                        style="padding: 0.2rem 0.4rem;">✕</button>
+                                                                </td>
+                                                            </tr>
+                                                            <% }) %>
+                                                                <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <% if (user.rol==='admin' ) { %>
+                                <div id="tab-revisiones" class="tab-content">
+                                    <div class="table-container glass">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th onclick="sortTable('revTable', 0)" style="cursor:pointer">Fecha
+                                                        ↕</th>
+                                                    <th onclick="sortTable('revTable', 1)" style="cursor:pointer">
+                                                        Usuario ↕</th>
+                                                    <th onclick="sortTable('revTable', 2)" style="cursor:pointer">Tipo ↕
+                                                    </th>
+                                                    <th>Datos Sugeridos</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="revTable">
+                                                <% if (solicitudes.length===0) { %>
+                                                    <tr>
+                                                        <td colspan="5" style="text-align: center; padding: 2rem;">No
+                                                            hay revisiones pendientes.</td>
+                                                    </tr>
+                                                    <% } else { %>
+                                                        <% solicitudes.forEach(sol=> { %>
+                                                            <% const datos=JSON.parse(sol.datos_json); %>
+                                                                <% const fields=[ {key: 'mem' , label: 'MEM' },
+                                                                    {key: 'tx' , label: 'TX' }, {key: 'rx' , label: 'RX'
+                                                                    }, {key: 'mod' , label: 'MOD' }, {key: 'subt' ,
+                                                                    label: 'SubT' }, {key: 'signal' , label: 'Señal' },
+                                                                    {key: 'banda' , label: 'Banda' }, {key: 'titular' ,
+                                                                    label: 'Titular' }, {key: 'ciudad' , label: 'Ciudad'
+                                                                    } ]; %>
+                                                                    <tr>
+                                                                        <td style="font-size: 0.75rem;">
+                                                                            <%= new
+                                                                                Date(sol.fecha_solicitud).toLocaleString()
+                                                                                %>
+                                                                        </td>
+                                                                        <td>
+                                                                            <%= sol.usuario_nombre %>
+                                                                        </td>
+                                                                        <td>
+                                                                            <span class="badge"
+                                                                                style="background: <%= sol.tipo === 'alta' ? 'rgba(34, 197, 129, 0.2)' : (sol.tipo === 'edicion' ? 'rgba(245, 158, 11, 0.2)' : (sol.tipo === 'publicar' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(239, 68, 68, 0.2)')) %>; color: <%= sol.tipo === 'alta' ? '#bbf7d0' : (sol.tipo === 'edicion' ? '#fde68a' : (sol.tipo === 'publicar' ? '#bfdbfe' : '#fecaca')) %>;">
+                                                                                <%= sol.tipo.toUpperCase() %>
+                                                                            </span>
+                                                                        </td>
+                                                                        <td style="font-size: 0.85rem;">
+                                                                            <% if (sol.tipo==='edicion' ) { %>
+                                                                                <div
+                                                                                    style="display: flex; flex-direction: column; gap: 0.25rem;">
+                                                                                    <% fields.forEach(f=> { %>
+                                                                                        <% if (String(datos[f.key] || ''
+                                                                                            ) !==String(sol['old_' +
+                                                                                            f.key] || '' )) { %>
+                                                                                            <div
+                                                                                                style="background: rgba(255,255,255,0.03); padding: 0.25rem 0.5rem; border-radius: 0.25rem;">
+                                                                                                <span class="diff-tag">
+                                                                                                    <%= f.label %>
+                                                                                                </span>
+                                                                                                <span
+                                                                                                    style="color: var(--danger); text-decoration: line-through; margin-right: 0.5rem;">
+                                                                                                    <%= sol['old_' +
+                                                                                                        f.key]
+                                                                                                        || '(vacío)' %>
+                                                                                                </span>
+                                                                                                <span
+                                                                                                    style="color: var(--success); font-weight: 700;">
+                                                                                                    <%= datos[f.key]
+                                                                                                        || '(vacío)' %>
+                                                                                                </span>
+                                                                                            </div>
+                                                                                            <% } %>
+                                                                                                <% }) %>
+                                                                                </div>
+                                                                                <% } else if (sol.tipo==='publicar' ) {
+                                                                                    %>
+                                                                                    <div
+                                                                                        style="color: var(--primary); font-weight: 700;">
+                                                                                        Solicitud de Publicación</div>
+                                                                                    <div><strong>
+                                                                                            <%= sol.old_signal %>
+                                                                                        </strong> (<%= sol.old_tx %> /
+                                                                                            <%= sol.old_rx %>)</div>
+                                                                                    <% } else { %>
+                                                                                        <div><strong>
+                                                                                                <%= datos.signal %>
+                                                                                            </strong> (<%= datos.tx %> /
+                                                                                                <%= datos.rx %>)</div>
+                                                                                        <div
+                                                                                            style="color: var(--text-muted); font-size: 0.75rem;">
+                                                                                            Titular: <%= datos.titular
+                                                                                                %>
+                                                                                        </div>
+                                                                                        <% } %>
+                                                                        </td>
+                                                                        <td class="actions-cell">
+                                                                            <form
+                                                                                action="/api/admin/solicitudes/<%= sol.id %>/aprobar"
+                                                                                method="POST" style="display:inline">
+                                                                                <button type="submit"
+                                                                                    class="btn btn-sm btn-success">Aprobar</button>
+                                                                            </form>
+                                                                            <form
+                                                                                action="/api/admin/solicitudes/<%= sol.id %>/rechazar"
+                                                                                method="POST" style="display:inline">
+                                                                                <button type="submit"
+                                                                                    class="btn btn-sm btn-danger"
+                                                                                    title="Rechazar">X</button>
+                                                                            </form>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <% }) %>
+                                                                        <% } %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <% } %>
+
+                                    <% if (user.rol==='admin' ) { %>
+                                        <div id="tab-usuarios" class="tab-content">
+                                            <div
+                                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                                                <h3>Gestión de Usuarios</h3>
+                                                <button class="btn btn-success" onclick="openModal('addUserModal')">+
+                                                    Nuevo Usuario</button>
+                                            </div>
+                                            <div class="table-container glass">
+                                                <table>
+                                                    <thead>
+                                                        <tr>
+                                                            <th onclick="sortTable('userTable', 0)"
+                                                                style="cursor:pointer">Nombre ↕</th>
+                                                            <th onclick="sortTable('userTable', 1)"
+                                                                style="cursor:pointer">Usuario ↕</th>
+                                                            <th onclick="sortTable('userTable', 2)"
+                                                                style="cursor:pointer">Correo ↕</th>
+                                                            <th onclick="sortTable('userTable', 3)"
+                                                                style="cursor:pointer">Rol ↕</th>
+                                                            <th onclick="sortTable('userTable', 4)"
+                                                                style="cursor:pointer">Fecha Alta ↕</th>
+                                                            <th>Acciones</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="userTable">
+                                                        <% usuarios_lista.forEach(u=> { %>
+                                                            <tr>
+                                                                <td>
+                                                                    <%= u.nombre %>
+                                                                </td>
+                                                                <td><strong>
+                                                                        <%= u.usuario %>
+                                                                    </strong></td>
+                                                                <td>
+                                                                    <%= u.correo %>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="badge"
+                                                                        style="background: <%= u.rol === 'admin' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(148, 163, 184, 0.2)' %>; color: <%= u.rol === 'admin' ? '#c7d2fe' : '#94a3b8' %>;">
+                                                                        <%= u.rol.toUpperCase() %>
+                                                                    </span>
+                                                                </td>
+                                                                <td style="font-size: 0.75rem;">
+                                                                    <%= new Date(u.fecha_alta).toLocaleDateString() %>
+                                                                </td>
+                                                                <td class="actions-cell">
+                                                                    <button class="btn btn-sm btn-secondary"
+                                                                        onclick='editUserRow(<%= JSON.stringify(u) %>)'>✎</button>
+                                                                    <% if (u.id !==user.id) { %>
+                                                                        <form
+                                                                            action="/api/admin/usuarios/delete/<%= u.id %>"
+                                                                            method="POST"
+                                                                            onsubmit="return confirm('¿Eliminar usuario?')">
+                                                                            <button
+                                                                                class="btn btn-sm btn-danger">🗑</button>
+                                                                        </form>
+                                                                        <% } %>
+                                                                </td>
+                                                            </tr>
+                                                            <% %>
+                                                                <% }) %>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <% } %>
+
+                                            <footer
+                                                style="margin-top: 4rem; padding: 2rem 0; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+                                                <p>© 2025 Frecuency Management System - v1.4.1</p>
+                                                <p style="margin-top: 0.5rem;">Desarrollado con ❤️ por
+                                                    <strong>sector7gp</strong></p>
+                                                <p style="margin-top: 1rem;">
+                                                    <a href="https://github.com/sector7gp/frecuency" target="_blank"
+                                                        style="color: var(--primary); text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+                                                        <svg stroke="currentColor" fill="currentColor" stroke-width="0"
+                                                            viewBox="0 0 496 512" height="1.2em" width="1.2em"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <path
+                                                                d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.4 2.3 17.2-5.1 17.2-12.2 0-5.7-.2-20.5-.3-40.2-66.9 14.4-80.6-32.9-80.6-32.9-11-28-26.9-35.4-26.9-35.4-21.8-14.9 1.7-14.5 1.7-14.5 24.2 1.6 37 24.8 37 24.8 21.5 37 54.8 26.3 68.1 20.1 2.2-15.5 8.4-26.3 15.3-32.4-53.5-6.2-109.8-26.7-109.8-119.3 0-26.4 9.3-48 24.5-64.5-2.5-6.1-10.6-30.6 2.4-63.6 0 0 20.3-6.5 66.2 24.7 19.3-5.4 40-8.1 60.6-8.1 20.6 0 41.3 2.7 60.6 8.1 45.9-31.2 66.2-24.7 66.2-24.7 13 33 4.9 57.5 2.4 63.6 15.2 16.5 24.5 38.1 24.5 64.5 0 92.7-56.3 113-110.1 119.1 8.7 7.4 16.3 22.3 16.3 45 0 32.5-.3 58.7-.3 66.7 0 7.2 4.8 15.6 17.3 12.1C426.2 457.8 496 362.9 496 252 496 113.3 389.9 8 244.8 8zM108.5 383.9c-.8 1.6.5 3.5 2.5 4.1 1.9.8 4.4-.3 5.1-1.9 1-1.6-.3-3.5-2.4-4.1-2-.7-4.4.2-5.1 1.9zm-8.8-5.7c-1.4 1.1-.3 3.1 2 4.1 2.7 1.2 5.4 1.2 6.5-.1 1.1-1.1.2-3.1-2.1-4.1-2.8-1.2-5.5-1.1-6.4.1zm-8.3-9.5c-1.6 1.1-1.5 3.3.3 4.8 1.8 1.6 4.6 1.8 6.1.6 1.7-1.1 1.4-3.4-.4-4.8-1.8-1.7-4.6-1.9-6-1zm-11.7-11.7c-2 1.1-2.5 3.3-1.1 5 1.4 1.7 4.1 1.8 6.1.8 2-1 2.5-3.2 1.1-5-1.4-1.7-4.1-1.8-6.1-.8z">
+                                                            </path>
+                                                        </svg>
+                                                        GitHub Repository
+                                                    </a>
+                                                </p>
+                                            </footer>
     </main>
 
     <!-- Add Modal -->
@@ -503,9 +766,11 @@
                 <div class="form-group">
                     <label>Estado</label>
                     <select name="id_estado">
-                        <% estados.forEach(e => { %>
-                            <option value="<%= e.id %>"><%= e.nombre %></option>
-                        <% }) %>
+                        <% estados.forEach(e=> { %>
+                            <option value="<%= e.id %>">
+                                <%= e.nombre %>
+                            </option>
+                            <% }) %>
                     </select>
                 </div>
                 <div class="form-group full-width"><label>TITULAR</label><input type="text" name="titular"></div>
@@ -513,9 +778,11 @@
                 <div class="form-group">
                     <label>PROVINCIA</label>
                     <select name="id_provincia">
-                        <% provincias.forEach(p => { %>
-                            <option value="<%= p.id %>"><%= p.nombre %> (<%= p.codigo_aereo %>)</option>
-                        <% }) %>
+                        <% provincias.forEach(p=> { %>
+                            <option value="<%= p.id %>">
+                                <%= p.nombre %> (<%= p.codigo_aereo %>)
+                            </option>
+                            <% }) %>
                     </select>
                 </div>
                 <div class="full-width" style="display: flex; gap: 1rem; margin-top: 1.5rem;">
@@ -530,7 +797,8 @@
     <div id="addPrivateModal" class="modal">
         <div class="modal-content glass">
             <h3>Nueva Frecuencia Privada</h3>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem;">Estas frecuencias solo tú las podrás ver hasta que decidas publicarlas.</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem;">Estas frecuencias solo tú las
+                podrás ver hasta que decidas publicarlas.</p>
             <form action="/api/mis-frecuencias" method="POST" class="grid-form">
                 <div class="form-group"><label>TX</label><input type="text" name="tx" placeholder="146.000"></div>
                 <div class="form-group"><label>RX</label><input type="text" name="rx" placeholder="146.000"></div>
@@ -541,15 +809,18 @@
                 <div class="form-group">
                     <label>Provincia</label>
                     <select name="id_provincia">
-                        <% provincias.forEach(p => { %>
-                            <option value="<%= p.id %>"><%= p.nombre %></option>
-                        <% }) %>
+                        <% provincias.forEach(p=> { %>
+                            <option value="<%= p.id %>">
+                                <%= p.nombre %>
+                            </option>
+                            <% }) %>
                     </select>
                 </div>
                 <div class="form-group"><label>Ciudad</label><input type="text" name="ciudad"></div>
                 <div class="full-width" style="display: flex; gap: 1rem; margin-top: 1.5rem;">
                     <button type="submit" class="btn btn-primary">Guardar Privada</button>
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('addPrivateModal')">Cancelar</button>
+                    <button type="button" class="btn btn-secondary"
+                        onclick="closeModal('addPrivateModal')">Cancelar</button>
                 </div>
             </form>
         </div>
@@ -564,33 +835,43 @@
                 <div class="form-group"><label>RX</label><input type="text" name="rx" id="edit_rx"></div>
                 <div class="form-group"><label>MOD</label><input type="text" name="mod" id="edit_mod"></div>
                 <div class="form-group"><label>SubT (Hz)</label><input type="text" name="subt" id="edit_subt"></div>
-                <div class="form-group"><label>SEÑAL</label><input type="text" name="signal" id="edit_signal" required></div>
+                <div class="form-group"><label>SEÑAL</label><input type="text" name="signal" id="edit_signal" required>
+                </div>
                 <div class="form-group"><label>Banda</label><input type="text" name="banda" id="edit_banda"></div>
                 <div class="form-group">
                     <label>Estado</label>
                     <select name="id_estado" id="edit_id_estado">
-                        <% estados.forEach(e => { %>
-                            <option value="<%= e.id %>"><%= e.nombre %></option>
-                        <% }) %>
+                        <% estados.forEach(e=> { %>
+                            <option value="<%= e.id %>">
+                                <%= e.nombre %>
+                            </option>
+                            <% }) %>
                     </select>
                 </div>
-                <div class="form-group full-width"><label>TITULAR</label><input type="text" name="titular" id="edit_titular"></div>
+                <div class="form-group full-width"><label>TITULAR</label><input type="text" name="titular"
+                        id="edit_titular"></div>
                 <div class="form-group"><label>CIUDAD</label><input type="text" name="ciudad" id="edit_ciudad"></div>
                 <div class="form-group">
                     <label>PROVINCIA</label>
                     <select name="id_provincia" id="edit_id_provincia">
-                        <% provincias.forEach(p => { %>
-                            <option value="<%= p.id %>"><%= p.nombre %> (<%= p.codigo_aereo %>)</option>
-                        <% }) %>
+                        <% provincias.forEach(p=> { %>
+                            <option value="<%= p.id %>">
+                                <%= p.nombre %> (<%= p.codigo_aereo %>)
+                            </option>
+                            <% }) %>
                     </select>
                 </div>
-                <div class="full-width" style="display: flex; gap: 1rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05);">
+                <div class="full-width"
+                    style="display: flex; gap: 1rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05);">
                     <button type="submit" class="btn btn-primary">Actualizar</button>
                     <button type="button" class="btn btn-secondary" onclick="closeModal('editModal')">Cerrar</button>
                 </div>
             </form>
-            <form id="deleteForm" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar este registro?')" style="margin-top: -3.3rem; margin-left: auto; width: fit-content; position: relative; z-index: 10;">
-                <button type="submit" class="btn btn-danger" style="background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2);">🗑 Eliminar</button>
+            <form id="deleteForm" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar este registro?')"
+                style="margin-top: -3.3rem; margin-left: auto; width: fit-content; position: relative; z-index: 10;">
+                <button type="submit" class="btn btn-danger"
+                    style="background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2);">🗑
+                    Eliminar</button>
             </form>
         </div>
     </div>
@@ -634,7 +915,8 @@
                 </div>
                 <div class="full-width" style="display: flex; gap: 1rem; margin-top: 1rem;">
                     <button type="submit" class="btn btn-primary">Crear Usuario</button>
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('addUserModal')">Cancelar</button>
+                    <button type="button" class="btn btn-secondary"
+                        onclick="closeModal('addUserModal')">Cancelar</button>
                 </div>
             </form>
         </div>
@@ -653,7 +935,8 @@
             <form id="importForm" onsubmit="handleImport(event)" enctype="multipart/form-data">
                 <div class="form-group">
                     <label>Archivo CSV</label>
-                    <input type="file" name="csv" accept=".csv" required style="padding: 1rem; border: 2px dashed rgba(255,255,255,0.1); width: 100%; border-radius: 0.5rem;">
+                    <input type="file" name="csv" accept=".csv" required
+                        style="padding: 1rem; border: 2px dashed rgba(255,255,255,0.1); width: 100%; border-radius: 0.5rem;">
                 </div>
                 <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
                     <button type="submit" class="btn btn-primary" id="importSubmitBtn">Procesar Archivo</button>
@@ -667,22 +950,28 @@
     <div id="importResultModal" class="modal">
         <div class="modal-content glass" style="max-width: 600px;">
             <h3>Resultado de la Importación</h3>
-            <div id="importSummary" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: 0.5rem; background: rgba(255,255,255,0.05);">
+            <div id="importSummary"
+                style="margin-bottom: 1.5rem; padding: 1rem; border-radius: 0.5rem; background: rgba(255,255,255,0.05);">
                 <!-- Resumen aquí -->
             </div>
             <div id="discardedSection" style="display:none;">
                 <h4 style="font-size: 0.9rem; color: var(--danger); margin-bottom: 0.5rem;">Registros Descartados</h4>
-                <div style="max-height: 250px; overflow-y: auto; border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 0.5rem;">
+                <div
+                    style="max-height: 250px; overflow-y: auto; border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 0.5rem;">
                     <table style="font-size: 0.8rem;">
                         <thead>
-                            <tr><th>Señal</th><th>Motivo</th></tr>
+                            <tr>
+                                <th>Señal</th>
+                                <th>Motivo</th>
+                            </tr>
                         </thead>
                         <tbody id="discardedTableBody"></tbody>
                     </table>
                 </div>
             </div>
             <div style="margin-top: 1.5rem;">
-                <button type="button" class="btn btn-primary" onclick="window.location.reload()">Aceptar y Recargar</button>
+                <button type="button" class="btn btn-primary" onclick="window.location.reload()">Aceptar y
+                    Recargar</button>
             </div>
         </div>
     </div>
@@ -773,7 +1062,7 @@
             const table = document.getElementById(tableId);
             let rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
             switching = true;
-            dir = "asc"; 
+            dir = "asc";
             while (switching) {
                 switching = false;
                 rows = table.rows;
@@ -796,7 +1085,7 @@
                 if (shouldSwitch) {
                     rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
                     switching = true;
-                    switchcount ++;      
+                    switchcount++;
                 } else {
                     if (switchcount == 0 && dir == "asc") {
                         dir = "desc";
@@ -810,7 +1099,7 @@
             event.preventDefault();
             const btn = document.getElementById('importSubmitBtn');
             const formData = new FormData(event.target);
-            
+
             btn.disabled = true;
             btn.innerText = 'Procesando...';
 
@@ -820,9 +1109,9 @@
                     body: formData
                 });
                 const data = await res.json();
-                
+
                 closeModal('importModal');
-                
+
                 const summaryDiv = document.getElementById('importSummary');
                 summaryDiv.innerHTML = `
                     <div style="color: var(--success); font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem;">🎉 ¡Importación finalizada!</div>
@@ -852,7 +1141,7 @@
             }
         }
 
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             if (event.target.className === 'modal') {
                 event.target.style.display = 'none';
             }
@@ -875,4 +1164,5 @@
         });
     </script>
 </body>
+
 </html>
