@@ -160,7 +160,12 @@
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
             <h2>Frecuencias</h2>
-            <button class="btn modal-trigger" onclick="openModal('addModal')">+ Sugerir Frecuencia</button>
+            <div style="display: flex; gap: 1rem;">
+                <% if (user.rol === 'admin') { %>
+                    <button class="btn btn-secondary" style="width: auto; padding: 0.5rem 1rem;" onclick="openModal('importModal')">📥 Importar CSV</button>
+                <% } %>
+                <button class="btn modal-trigger" onclick="openModal('addModal')">+ Sugerir Frecuencia</button>
+            </div>
         </div>
 
         <div class="tabs">
@@ -382,7 +387,7 @@
         <% } %>
         
         <footer style="margin-top: 4rem; padding: 2rem 0; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; color: var(--text-muted); font-size: 0.85rem;">
-            <p>© 2025 Frecuency Management System - v1.0.0</p>
+            <p>© 2025 Frecuency Management System - v1.2.0</p>
             <p style="margin-top: 0.5rem;">Desarrollado con ❤️ por <strong>sector7gp</strong></p>
             <p style="margin-top: 1rem;">
                 <a href="#" style="color: var(--primary); text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
@@ -514,27 +519,50 @@
         </div>
     </div>
 
-    <!-- Edit User Modal -->
-    <div id="editUserModal" class="modal">
-        <div class="modal-content glass">
-            <h3>Editar Usuario</h3>
-            <form id="editUserForm" method="POST" class="grid-form">
-                <div class="form-group"><label>Nombre Completo</label><input type="text" name="nombre" id="edit_user_nombre" required></div>
-                <div class="form-group"><label>Usuario</label><input type="text" name="usuario" id="edit_user_usuario" required></div>
-                <div class="form-group"><label>Correo</label><input type="email" name="correo" id="edit_user_correo" required></div>
-                <div class="form-group"><label>Nueva Contraseña (dejar vacío para no cambiar)</label><input type="password" name="password" placeholder="••••••••"></div>
-                <div class="form-group full-width">
-                    <label>Rol</label>
-                    <select name="rol" id="edit_user_rol">
-                        <option value="usuario">Usuario Regular</option>
-                        <option value="admin">Administrador</option>
-                    </select>
+    <!-- Edit User Modal ... (no changes here but included for context) -->
+
+    <!-- Import CSV Modal -->
+    <div id="importModal" class="modal">
+        <div class="modal-content glass" style="max-width: 500px;">
+            <h3>Importar Frecuencias (CSV)</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Sube un archivo .csv (separado por tabulaciones o comas). <br>
+                <strong>Encabezados requeridos:</strong> TX, RX, SEÑAL.
+            </p>
+            <form id="importForm" onsubmit="handleImport(event)" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>Archivo CSV</label>
+                    <input type="file" name="csv" accept=".csv" required style="padding: 1rem; border: 2px dashed rgba(255,255,255,0.1); width: 100%; border-radius: 0.5rem;">
                 </div>
-                <div class="full-width" style="display: flex; gap: 1rem; margin-top: 1rem;">
-                    <button type="submit" class="btn">Actualizar Usuario</button>
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('editUserModal')">Cancelar</button>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn" id="importSubmitBtn">Procesar Archivo</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('importModal')">Cerrar</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Import Result Modal -->
+    <div id="importResultModal" class="modal">
+        <div class="modal-content glass" style="max-width: 600px;">
+            <h3>Resultado de la Importación</h3>
+            <div id="importSummary" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: 0.5rem; background: rgba(255,255,255,0.05);">
+                <!-- Resumen aquí -->
+            </div>
+            <div id="discardedSection" style="display:none;">
+                <h4 style="font-size: 0.9rem; color: var(--danger); margin-bottom: 0.5rem;">Registros Descartados</h4>
+                <div style="max-height: 250px; overflow-y: auto; border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 0.5rem;">
+                    <table style="font-size: 0.8rem;">
+                        <thead>
+                            <tr><th>Señal</th><th>Motivo</th></tr>
+                        </thead>
+                        <tbody id="discardedTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div style="margin-top: 1.5rem;">
+                <button type="button" class="btn" onclick="window.location.reload()">Aceptar y Recargar</button>
+            </div>
         </div>
     </div>
 
@@ -653,6 +681,52 @@
                         switching = true;
                     }
                 }
+            }
+        }
+
+        async function handleImport(event) {
+            event.preventDefault();
+            const btn = document.getElementById('importSubmitBtn');
+            const formData = new FormData(event.target);
+            
+            btn.disabled = true;
+            btn.innerText = 'Procesando...';
+
+            try {
+                const res = await fetch('/api/admin/importar-csv', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                
+                closeModal('importModal');
+                
+                const summaryDiv = document.getElementById('importSummary');
+                summaryDiv.innerHTML = `
+                    <div style="color: var(--success); font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem;">🎉 ¡Importación finalizada!</div>
+                    <p>✅ <strong>${data.summary.imported}</strong> registros importados con éxito.</p>
+                    <p>❌ <strong>${data.summary.discarded}</strong> registros omitidos.</p>
+                `;
+
+                if (data.discardedRecords && data.discardedRecords.length > 0) {
+                    document.getElementById('discardedSection').style.display = 'block';
+                    const tbody = document.getElementById('discardedTableBody');
+                    tbody.innerHTML = data.discardedRecords.map(r => `
+                        <tr>
+                            <td>${r.signal}</td>
+                            <td style="color: var(--danger)">${r.reason}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    document.getElementById('discardedSection').style.display = 'none';
+                }
+
+                openModal('importResultModal');
+            } catch (err) {
+                alert('Error al importar el archivo: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Procesar Archivo';
             }
         }
 

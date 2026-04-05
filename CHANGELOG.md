@@ -2,6 +2,14 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.2.0] - 2025-04-05
+
+### 📥 Importación Masiva
+- **Nueva Herramienta**: Se añadió un sistema de importación automática de registros vía archivos CSV para administradores.
+- **Mapeo Inteligente**: Se implementó una lógica de comparación flexible para provincias y estados (ignora tildes y mayúsculas).
+- **Control de Duplicados**: Prevención de registros duplicados basados en TX, RX y SEÑAL.
+- **Panel de Resultados**: Visualización detallada de registros exitosos y descartados con motivos claros.
+
 ## [1.1.0] - 2025-04-05
 
 ### 🚀 Mejoras de UX y UI
