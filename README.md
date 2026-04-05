@@ -39,6 +39,30 @@ Para desarrollo con auto-recarga (usa nodemon):
 npm run dev
 ```
 
+### 🚀 Ejecutar como Servicio (Producción con PM2)
+Si deseas que la aplicación corra de fondo y se reinicie automáticamente:
+
+1. **Instalar PM2 globalmente**:
+   ```bash
+   npm install -g pm2
+   ```
+
+2. **Iniciar la aplicación**:
+   ```bash
+   pm2 start server.js --name frecuency
+   ```
+
+3. **Configurar persistencia** (para que inicie al reiniciar el sistema):
+   ```bash
+   pm2 save
+   pm2 startup
+   ```
+
+4. **Comandos útiles**:
+   - Ver estado: `pm2 status`
+   - Ver logs en tiempo real: `pm2 logs frecuency`
+   - Reiniciar: `pm2 restart frecuency`
+
 El sistema estará disponible en: [http://localhost:3003](http://localhost:3003)
 
 ---
