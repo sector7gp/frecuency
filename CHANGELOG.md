@@ -2,6 +2,29 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.4.1] - 2026-04-05
+
+### ✨ Unificación y Renombre
+- **Mi Plan de Frecuencias**: Se renombró el módulo de "Favoritos" para una mejor identidad del sistema.
+- **Sincronización Total**: La tabla de "Mis Frecuencias" ahora es idéntica a la vista General.
+- **Favoritos en Privado**: Se habilitó la posibilidad de marcar frecuencias privadas como favoritas.
+- **Columnas Sincronizadas**: Todas las tablas ahora muestran Provincia, Ciudad y Estado de forma consistente.
+
+## [1.4.0] - 2026-04-05
+
+### 🎨 Refactorización Estética (UI/UX)
+- **Compactación de Interfaz**: Se redujo el padding de celdas y botones para una vista más densa y profesional.
+- **Jerarquía de Datos**: La columna **Titular** ahora es la primera y actúa como enlace para editar.
+- **Headers Fix**: Los iconos de ordenación (`↕`) ahora se mantienen en la misma línea que el texto.
+- **Limpieza Visual**: Se eliminó la columna de acciones; el botón de borrar se movió al modal de edición.
+
+## [1.3.0] - 2026-04-05
+
+### 🔒 Módulo "Mis Frecuencias"
+- **Privacidad**: Nueva tabla y lógica para que los usuarios gestionen frecuencias privadas.
+- **Flujo de Publicación**: Sistema de solicitudes para convertir frecuencias privadas en públicas vía administrador.
+- **Nuevas Columnas**: Integración de `id_usuario_creador` y `es_privada` en la base de datos.
+
 ## [1.2.0] - 2025-04-05
 
 ### 📥 Importación Masiva

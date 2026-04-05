@@ -41,11 +41,14 @@ db.exec(`
     titular TEXT,
     ciudad TEXT,
     id_provincia INTEGER,
+    id_usuario_creador INTEGER, 
+    es_privada INTEGER DEFAULT 0, -- 0: Pública, 1: Privada
     fecha_alta DATETIME DEFAULT CURRENT_TIMESTAMP,
     fecha_modificacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     fecha_baja DATETIME,
     FOREIGN KEY(id_estado) REFERENCES estados(id),
-    FOREIGN KEY(id_provincia) REFERENCES provincias(id)
+    FOREIGN KEY(id_provincia) REFERENCES provincias(id),
+    FOREIGN KEY(id_usuario_creador) REFERENCES usuarios(id)
   );
 
   CREATE TABLE IF NOT EXISTS solicitudes_cambios (

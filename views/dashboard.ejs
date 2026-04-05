@@ -164,13 +164,15 @@
                 <% if (user.rol === 'admin') { %>
                     <button class="btn btn-secondary" onclick="openModal('importModal')">📥 Importar CSV</button>
                 <% } %>
-                <button class="btn btn-success" onclick="openModal('addModal')">+ Sugerir Frecuencia</button>
+                <button class="btn btn-info" onclick="openModal('addPrivateModal')">➕ Nueva Privada</button>
+                <button class="btn btn-success" onclick="openModal('addModal')">+ Sugerir Pública</button>
             </div>
         </div>
 
         <div class="tabs">
             <button class="tab-btn active" id="tab-btn-general" onclick="showTab('general')">General</button>
-            <button class="tab-btn" id="tab-btn-favoritos" onclick="showTab('favoritos')">Mis Favoritos</button>
+            <button class="tab-btn" id="tab-btn-mis-frecuencias" onclick="showTab('mis-frecuencias')">Mis Frecuencias</button>
+            <button class="tab-btn" id="tab-btn-favoritos" onclick="showTab('favoritos')">Mi Plan de Frecuencias</button>
             <% if (user.rol === 'admin') { %>
                 <button class="tab-btn" id="tab-btn-revisiones" onclick="showTab('revisiones')">Revisiones (<%= solicitudes.length %>)</button>
                 <button class="tab-btn" id="tab-btn-usuarios" onclick="showTab('usuarios')">Usuarios</button>
@@ -183,41 +185,97 @@
                     <thead>
                         <tr>
                             <th></th>
-                            <th onclick="sortTable('generalTable', 1)" style="cursor:pointer">TX ↕</th>
-                            <th onclick="sortTable('generalTable', 2)" style="cursor:pointer">RX ↕</th>
-                            <th onclick="sortTable('generalTable', 3)" style="cursor:pointer">Mod ↕</th>
-                            <th onclick="sortTable('generalTable', 4)" style="cursor:pointer">SubT ↕</th>
-                            <th onclick="sortTable('generalTable', 5)" style="cursor:pointer">Señal ↕</th>
-                            <th onclick="sortTable('generalTable', 6)" style="cursor:pointer">Banda ↕</th>
-                            <th onclick="sortTable('generalTable', 7)" style="cursor:pointer">Estado ↕</th>
-                            <th onclick="sortTable('generalTable', 8)" style="cursor:pointer">Titular ↕</th>
-                            <th>Acciones</th>
+                            <th onclick="sortTable('generalTable', 1)" style="cursor:pointer">Titular <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('generalTable', 2)" style="cursor:pointer">Señal <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('generalTable', 3)" style="cursor:pointer">TX <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('generalTable', 4)" style="cursor:pointer">RX <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('generalTable', 5)" style="cursor:pointer">Mod <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('generalTable', 6)" style="cursor:pointer">SubT <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('generalTable', 7)" style="cursor:pointer">Banda <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('generalTable', 8)" style="cursor:pointer">Estado <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('generalTable', 9)" style="cursor:pointer">Provincia <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('generalTable', 10)" style="cursor:pointer">Ciudad <span class="sort-icon">↕</span></th>
                         </tr>
                     </thead>
                     <tbody id="generalTable">
-                        <% data.forEach(row => { %>
+                        <% data.filter(d => !d.es_privada).forEach(row => { %>
                             <tr>
                                 <td>
                                     <button class="fav-btn <%= row.es_favorito ? 'active' : 'inactive' %>" onclick="toggleFavorite(<%= row.id %>)">
                                         <%= row.es_favorito ? '★' : '☆' %>
                                     </button>
                                 </td>
+                                <td>
+                                    <button onclick='editRow(<%= JSON.stringify(row) %>)' style="background:none; border:none; color:var(--accent); cursor:pointer; text-align:left; padding:0; font-weight:600; text-decoration:underline;">
+                                        <%= row.titular %>
+                                    </button>
+                                </td>
+                                <td><strong><%= row.signal %></strong></td>
                                 <td><%= row.tx %></td>
                                 <td><%= row.rx %></td>
                                 <td><%= row.mod %></td>
                                 <td><%= row.subt %></td>
-                                <td><strong><%= row.signal %></strong></td>
                                 <td><%= row.banda %></td>
-                                <td><span class="badge badge-<%= row.estado_color %>"><%= row.estado_nombre %></span></td>
-                                <td><%= row.titular %></td>
-                                <td class="actions-cell">
-                                    <button class="btn btn-secondary" onclick='editRow(<%= JSON.stringify(row) %>)'>✎</button>
-                                    <form action="/api/datos/delete/<%= row.id %>" method="POST" onsubmit="return confirm('¿Eliminar registro?')">
-                                        <button class="btn btn-danger">🗑</button>
-                                    </form>
-                                </td>
+                                <td><span class="badge badge-<%= row.estado_color %>" style="font-size:0.7rem;"><%= row.estado_nombre %></span></td>
+                                <td style="font-size:0.8rem;"><%= row.provincia_nombre %></td>
+                                <td style="font-size:0.8rem;"><%= row.ciudad %></td>
                             </tr>
                         <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="tab-mis-frecuencias" class="tab-content">
+            <div class="table-container glass">
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th onclick="sortTable('privateTable', 1)" style="cursor:pointer">Titular <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('privateTable', 2)" style="cursor:pointer">Señal <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('privateTable', 3)" style="cursor:pointer">TX <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('privateTable', 4)" style="cursor:pointer">RX <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('privateTable', 5)" style="cursor:pointer">Mod <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('privateTable', 6)" style="cursor:pointer">SubT <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('privateTable', 7)" style="cursor:pointer">Banda <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('privateTable', 8)" style="cursor:pointer">Estado <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('privateTable', 9)" style="cursor:pointer">Provincia <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('privateTable', 10)" style="cursor:pointer">Ciudad <span class="sort-icon">↕</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="privateTable">
+                        <% const misPrivadas = data.filter(d => d.es_privada && d.id_usuario_creador === user.id); %>
+                        <% if (misPrivadas.length === 0) { %>
+                            <tr><td colspan="6" style="text-align: center; padding: 2rem;">No tienes frecuencias privadas. ¡Crea una con el botón de arriba!</td></tr>
+                        <% } else { %>
+                            <% misPrivadas.forEach(row => { %>
+                                <tr>
+                                    <td>
+                                        <button class="fav-btn <%= row.es_favorito ? 'active' : 'inactive' %>" onclick="toggleFavorite(<%= row.id %>)">
+                                            <%= row.es_favorito ? '★' : '☆' %>
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button onclick='editRow(<%= JSON.stringify(row) %>)' style="background:none; border:none; color:var(--accent); cursor:pointer; text-align:left; padding:0; font-weight:600; text-decoration:underline;">
+                                            <%= row.titular || 'Sin Titular' %>
+                                        </button>
+                                        <form action="/api/datos/hacer-publica/<%= row.id %>" method="POST" style="display:inline; margin-left: 0.5rem;">
+                                            <button type="submit" class="btn btn-sm btn-info" title="Hacer pública" style="padding: 0.1rem 0.3rem; font-size: 0.6rem;">🌍</button>
+                                        </form>
+                                    </td>
+                                    <td><strong><%= row.signal %></strong></td>
+                                    <td><%= row.tx %></td>
+                                    <td><%= row.rx %></td>
+                                    <td><%= row.mod %></td>
+                                    <td><%= row.subt %></td>
+                                    <td><%= row.banda %></td>
+                                    <td><span class="badge badge-<%= row.estado_color %>" style="font-size:0.7rem;"><%= row.estado_nombre %></span></td>
+                                    <td style="font-size: 0.8rem;"><%= row.provincia_nombre %></td>
+                                    <td style="font-size: 0.8rem;"><%= row.ciudad %></td>
+                                </tr>
+                            <% }) %>
+                        <% } %>
                     </tbody>
                 </table>
             </div>
@@ -228,13 +286,17 @@
                 <table>
                     <thead>
                         <tr>
-                            <th onclick="sortTable('favTable', 0)" style="cursor:pointer"># Personal ↕</th>
-                            <th onclick="sortTable('favTable', 1)" style="cursor:pointer">Señal ↕</th>
-                            <th onclick="sortTable('favTable', 2)" style="cursor:pointer">TX ↕</th>
-                            <th onclick="sortTable('favTable', 3)" style="cursor:pointer">RX ↕</th>
-                            <th onclick="sortTable('favTable', 4)" style="cursor:pointer">SubT ↕</th>
-                            <th onclick="sortTable('favTable', 5)" style="cursor:pointer">Titular ↕</th>
-                            <th>Acciones</th>
+                            <th onclick="sortTable('favTable', 0)" style="cursor:pointer">Titular <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('favTable', 1)" style="cursor:pointer">Señal <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('favTable', 2)" style="cursor:pointer">TX <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('favTable', 3)" style="cursor:pointer">RX <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('favTable', 4)" style="cursor:pointer">Mod <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('favTable', 5)" style="cursor:pointer">SubT <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('favTable', 6)" style="cursor:pointer">Banda <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('favTable', 7)" style="cursor:pointer">Estado <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('favTable', 8)" style="cursor:pointer">Provincia <span class="sort-icon">↕</span></th>
+                            <th onclick="sortTable('favTable', 9)" style="cursor:pointer"># Mem <span class="sort-icon">↕</span></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody id="favTable">
@@ -245,16 +307,24 @@
                             <% favorites.forEach(row => { %>
                                 <tr>
                                     <td>
-                                        <span style="font-weight: 700; color: var(--accent); margin-right: 0.5rem;"><%= row.memoria_personalizada || row.mem || '-' %></span>
-                                        <button class="btn btn-sm btn-info" onclick="openMemModal(<%= row.id %>, '<%= row.memoria_personalizada || '' %>')">edit</button>
+                                        <button onclick='editRow(<%= JSON.stringify(row) %>)' style="background:none; border:none; color:var(--accent); cursor:pointer; text-align:left; padding:0; font-weight:600; text-decoration:underline;">
+                                            <%= row.titular %>
+                                        </button>
                                     </td>
                                     <td><strong><%= row.signal %></strong></td>
                                     <td><%= row.tx %></td>
                                     <td><%= row.rx %></td>
+                                    <td><%= row.mod %></td>
                                     <td><%= row.subt %></td>
-                                    <td><%= row.titular %></td>
+                                    <td><%= row.banda %></td>
+                                    <td><span class="badge badge-<%= row.estado_color %>" style="font-size:0.7rem;"><%= row.estado_nombre %></span></td>
+                                    <td style="font-size:0.8rem;"><%= row.provincia_nombre %></td>
                                     <td>
-                                        <button class="btn btn-sm btn-danger" onclick="toggleFavorite(<%= row.id %>)">Quitar</button>
+                                        <span style="font-weight: 700; color: var(--accent); margin-right: 0.5rem;"><%= row.memoria_personalizada || row.mem || '-' %></span>
+                                        <button class="btn btn-sm btn-info" onclick="openMemModal(<%= row.id %>, '<%= row.memoria_personalizada || '' %>')" style="padding: 0.1rem 0.3rem;">✎</button>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-danger" onclick="toggleFavorite(<%= row.id %>)" style="padding: 0.2rem 0.4rem;">✕</button>
                                     </td>
                                 </tr>
                             <% }) %>
@@ -300,7 +370,7 @@
                                         <td style="font-size: 0.75rem;"><%= new Date(sol.fecha_solicitud).toLocaleString() %></td>
                                         <td><%= sol.usuario_nombre %></td>
                                         <td>
-                                            <span class="badge" style="background: <%= sol.tipo === 'alta' ? 'rgba(34, 197, 94, 0.2)' : (sol.tipo === 'edicion' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(239, 68, 68, 0.2)') %>; color: <%= sol.tipo === 'alta' ? '#bbf7d0' : (sol.tipo === 'edicion' ? '#fde68a' : '#fecaca') %>;">
+                                            <span class="badge" style="background: <%= sol.tipo === 'alta' ? 'rgba(34, 197, 129, 0.2)' : (sol.tipo === 'edicion' ? 'rgba(245, 158, 11, 0.2)' : (sol.tipo === 'publicar' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(239, 68, 68, 0.2)')) %>; color: <%= sol.tipo === 'alta' ? '#bbf7d0' : (sol.tipo === 'edicion' ? '#fde68a' : (sol.tipo === 'publicar' ? '#bfdbfe' : '#fecaca')) %>;">
                                                 <%= sol.tipo.toUpperCase() %>
                                             </span>
                                         </td>
@@ -317,6 +387,9 @@
                                                         <% } %>
                                                     <% }) %>
                                                 </div>
+                                            <% } else if (sol.tipo === 'publicar') { %>
+                                                <div style="color: var(--primary); font-weight: 700;">Solicitud de Publicación</div>
+                                                <div><strong><%= sol.old_signal %></strong> (<%= sol.old_tx %> / <%= sol.old_rx %>)</div>
                                             <% } else { %>
                                                 <div><strong><%= datos.signal %></strong> (<%= datos.tx %> / <%= datos.rx %>)</div>
                                                 <div style="color: var(--text-muted); font-size: 0.75rem;">Titular: <%= datos.titular %></div>
@@ -435,6 +508,35 @@
         </div>
     </div>
 
+    <!-- Add Private Modal -->
+    <div id="addPrivateModal" class="modal">
+        <div class="modal-content glass">
+            <h3>Nueva Frecuencia Privada</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem;">Estas frecuencias solo tú las podrás ver hasta que decidas publicarlas.</p>
+            <form action="/api/mis-frecuencias" method="POST" class="grid-form">
+                <div class="form-group"><label>TX</label><input type="text" name="tx" placeholder="146.000"></div>
+                <div class="form-group"><label>RX</label><input type="text" name="rx" placeholder="146.000"></div>
+                <div class="form-group"><label>MOD</label><input type="text" name="mod"></div>
+                <div class="form-group"><label>SubT (Hz)</label><input type="text" name="subt"></div>
+                <div class="form-group"><label>SEÑAL</label><input type="text" name="signal" required></div>
+                <div class="form-group"><label>Banda</label><input type="text" name="banda"></div>
+                <div class="form-group">
+                    <label>Provincia</label>
+                    <select name="id_provincia">
+                        <% provincias.forEach(p => { %>
+                            <option value="<%= p.id %>"><%= p.nombre %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="form-group"><label>Ciudad</label><input type="text" name="ciudad"></div>
+                <div class="full-width" style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary">Guardar Privada</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addPrivateModal')">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Edit Modal -->
     <div id="editModal" class="modal">
         <div class="modal-content glass">
@@ -464,9 +566,14 @@
                         <% }) %>
                     </select>
                 </div>
-                <div class="full-width" style="display: flex; gap: 1rem; margin-top: 1rem;">
-                    <button type="submit" class="btn btn-primary">Actualizar</button>
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('editModal')">Cerrar</button>
+                <div class="full-width" style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05);">
+                    <div style="display: flex; gap: 1rem;">
+                        <button type="submit" class="btn btn-primary">Actualizar</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('editModal')">Cerrar</button>
+                    </div>
+                    <form id="deleteForm" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar este registro?')">
+                        <button type="submit" class="btn btn-danger" style="background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2);">🗑 Eliminar</button>
+                    </form>
                 </div>
             </form>
         </div>
@@ -584,7 +691,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             if (window.location.hash) {
                 const hash = window.location.hash.substring(1);
-                if (['general', 'favoritos', 'revisiones', 'usuarios'].includes(hash)) {
+                if (['general', 'mis-frecuencias', 'favoritos', 'revisiones', 'usuarios'].includes(hash)) {
                     showTab(hash);
                 }
             }
@@ -632,6 +739,7 @@
 
         function editRow(data) {
             document.getElementById('editForm').action = `/api/datos/edit/${data.id}`;
+            document.getElementById('deleteForm').action = `/api/datos/delete/${data.id}`;
             document.getElementById('edit_tx').value = data.tx || '';
             document.getElementById('edit_rx').value = data.rx || '';
             document.getElementById('edit_mod').value = data.mod || '';

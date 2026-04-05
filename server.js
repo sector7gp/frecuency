@@ -76,8 +76,8 @@ app.get('/dashboard', isAuthenticated, (req, res) => {
     LEFT JOIN estados e ON d.id_estado = e.id
     LEFT JOIN provincias p ON d.id_provincia = p.id
     LEFT JOIN favoritos f ON d.id = f.id_dato AND f.id_usuario = ?
-    WHERE d.fecha_baja IS NULL
-  `).all(req.session.user.id);
+    WHERE d.fecha_baja IS NULL AND (d.es_privada = 0 OR d.id_usuario_creador = ?)
+  `).all(req.session.user.id, req.session.user.id);
   
   const estados = db.prepare('SELECT * FROM estados').all();
   const provincias = db.prepare('SELECT * FROM provincias').all();
@@ -136,6 +136,36 @@ app.post('/api/datos', isAuthenticated, (req, res) => {
     stmt.run(req.session.user.id, 'alta', JSON.stringify(req.body));
   }
   res.redirect('/dashboard?msg=pendiente');
+});
+// Crear Frecuencia Privada (Mis Frecuencias)
+app.post('/api/mis-frecuencias', isAuthenticated, (req, res) => {
+  const { mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia } = req.body;
+  const insert = db.prepare(`
+    INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_usuario_creador, es_privada)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+  `);
+  insert.run(mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, req.session.user.id);
+  res.redirect('/dashboard?msg=guardado&tab=mis-frecuencias');
+});
+
+// Solicitar hacer pública una frecuencia privada
+app.post('/api/datos/hacer-publica/:id', isAuthenticated, (req, res) => {
+  const { id } = req.params;
+  const dato = db.prepare('SELECT * FROM datos WHERE id = ?').get(id);
+
+  if (!dato || dato.id_usuario_creador !== req.session.user.id) {
+    return res.status(403).send('No tienes permiso para publicar esta frecuencia.');
+  }
+
+  if (req.session.user.rol === 'admin') {
+    db.prepare('UPDATE datos SET es_privada = 0 WHERE id = ?').run(id);
+    res.redirect('/dashboard?msg=publicado');
+  } else {
+    // Usuario regular: crear solicitud de cambio (tipo 'publicar')
+    const stmt = db.prepare('INSERT INTO solicitudes_cambios (id_usuario, id_dato, tipo, datos_json) VALUES (?, ?, ?, ?)');
+    stmt.run(req.session.user.id, id, 'publicar', JSON.stringify({ signal: dato.signal, nota: 'Solicitud para hacer pública' }));
+    res.redirect('/dashboard?msg=pendiente');
+  }
 });
 
 app.post('/api/datos/edit/:id', isAuthenticated, (req, res) => {
@@ -202,10 +232,10 @@ app.post('/api/admin/solicitudes/:id/aprobar', isAdmin, (req, res) => {
   
   if (solicitud.tipo === 'alta') {
     const insert = db.prepare(`
-      INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_usuario_creador, es_privada)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
     `);
-    insert.run(datos.mem, datos.tx, datos.rx, datos.mod, datos.subt, datos.signal, datos.banda, datos.id_estado, datos.titular, datos.ciudad, datos.id_provincia);
+    insert.run(datos.mem, datos.tx, datos.rx, datos.mod, datos.subt, datos.signal, datos.banda, datos.id_estado, datos.titular, datos.ciudad, datos.id_provincia, solicitud.id_usuario);
   } else if (solicitud.tipo === 'edicion') {
     const update = db.prepare(`
       UPDATE datos 
@@ -215,6 +245,8 @@ app.post('/api/admin/solicitudes/:id/aprobar', isAdmin, (req, res) => {
     update.run(datos.mem, datos.tx, datos.rx, datos.mod, datos.subt, datos.signal, datos.banda, datos.id_estado, datos.titular, datos.ciudad, datos.id_provincia, solicitud.id_dato);
   } else if (solicitud.tipo === 'baja') {
     db.prepare('UPDATE datos SET fecha_baja = CURRENT_TIMESTAMP WHERE id = ?').run(solicitud.id_dato);
+  } else if (solicitud.tipo === 'publicar') {
+    db.prepare('UPDATE datos SET es_privada = 0 WHERE id = ?').run(solicitud.id_dato);
   }
   
   db.prepare("UPDATE solicitudes_cambios SET estado = 'aprobado' WHERE id = ?").run(id);
