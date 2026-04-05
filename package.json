@@ -1,6 +1,6 @@
 {
   "name": "frecuency",
-  "version": "1.2.0",
+  "version": "1.4.1",
   "description": "Sistema de gestión de frecuencias de radio con SQLite y Express.",
   "main": "index.js",
   "scripts": {
