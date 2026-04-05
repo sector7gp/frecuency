@@ -170,34 +170,40 @@ app.post('/api/datos/hacer-publica/:id', isAuthenticated, (req, res) => {
 
 app.post('/api/datos/edit/:id', isAuthenticated, (req, res) => {
   const { id } = req.params;
-  const { mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia } = req.body;
+  const { tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia } = req.body;
   
-  if (req.session.user.rol === 'admin') {
+  const dato = db.prepare('SELECT es_privada, id_usuario_creador FROM datos WHERE id = ?').get(id);
+  
+  if (req.session.user.rol === 'admin' || (dato && dato.es_privada && dato.id_usuario_creador === req.session.user.id)) {
     const update = db.prepare(`
       UPDATE datos 
-      SET mem = ?, tx = ?, rx = ?, mod = ?, subt = ?, signal = ?, banda = ?, id_estado = ?, titular = ?, ciudad = ?, id_provincia = ?, fecha_modificacion = CURRENT_TIMESTAMP
+      SET tx = ?, rx = ?, mod = ?, subt = ?, signal = ?, banda = ?, id_estado = ?, titular = ?, ciudad = ?, id_provincia = ?, fecha_modificacion = CURRENT_TIMESTAMP
       WHERE id = ?
     `);
-    update.run(mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id);
+    update.run(tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id);
+    res.redirect('/dashboard?msg=actualizado');
   } else {
-    // Usuario regular: crear solicitud de edición
+    // Usuario regular editando pública: crear solicitud de edición
     const stmt = db.prepare('INSERT INTO solicitudes_cambios (id_dato, id_usuario, tipo, datos_json) VALUES (?, ?, ?, ?)');
     stmt.run(id, req.session.user.id, 'edicion', JSON.stringify(req.body));
+    res.redirect('/dashboard?msg=pendiente');
   }
-  res.redirect('/dashboard?msg=pendiente');
 });
 
 app.post('/api/datos/delete/:id', isAuthenticated, (req, res) => {
   const { id } = req.params;
-  if (req.session.user.rol === 'admin') {
+  const dato = db.prepare('SELECT es_privada, id_usuario_creador FROM datos WHERE id = ?').get(id);
+
+  if (req.session.user.rol === 'admin' || (dato && dato.es_privada && dato.id_usuario_creador === req.session.user.id)) {
     const softDelete = db.prepare('UPDATE datos SET fecha_baja = CURRENT_TIMESTAMP WHERE id = ?');
     softDelete.run(id);
+    res.redirect('/dashboard?msg=deleted');
   } else {
-    // Usuario regular: solicitar baja
+    // Usuario regular bajando pública: solicitar baja
     const stmt = db.prepare('INSERT INTO solicitudes_cambios (id_dato, id_usuario, tipo, datos_json) VALUES (?, ?, ?, ?)');
     stmt.run(id, req.session.user.id, 'baja', JSON.stringify({id}));
+    res.redirect('/dashboard?msg=pendiente');
   }
-  res.redirect('/dashboard?msg=pendiente');
 });
 
 // Favoritos

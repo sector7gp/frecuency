@@ -151,11 +151,29 @@
 
         <% if (typeof msg !== 'undefined' || (typeof req !== 'undefined' && req.query.msg)) { %>
             <% const m = (typeof msg !== 'undefined') ? msg : req.query.msg; %>
-            <% if (m === 'pendiente') { %>
-                <div class="alert alert-info">✓ Solicitud enviada correctamente. Un administrador la revisará pronto.</div>
-            <% } else if (m === 'aprobado') { %>
-                <div class="alert alert-success">✓ Solicitud aprobada y aplicada.</div>
-            <% } %>
+            <div id="flash-message">
+                <% if (m === 'pendiente') { %>
+                    <div class="alert alert-info">
+                        <span>✓ Solicitud enviada correctamente. Un administrador la revisará pronto.</span>
+                        <button class="close-alert" onclick="dismissAlert()">&times;</button>
+                    </div>
+                <% } else if (m === 'aprobado') { %>
+                    <div class="alert alert-success">
+                        <span>✓ Solicitud aprobada y aplicada.</span>
+                        <button class="close-alert" onclick="dismissAlert()">&times;</button>
+                    </div>
+                <% } else if (m === 'actualizado') { %>
+                    <div class="alert alert-success">
+                        <span>✓ Registro actualizado correctamente.</span>
+                        <button class="close-alert" onclick="dismissAlert()">&times;</button>
+                    </div>
+                <% } else if (m === 'deleted') { %>
+                    <div class="alert alert-success">
+                        <span>✓ Registro eliminado correctamente.</span>
+                        <button class="close-alert" onclick="dismissAlert()">&times;</button>
+                    </div>
+                <% } %>
+            </div>
         <% } %>
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
@@ -839,6 +857,22 @@
                 event.target.style.display = 'none';
             }
         }
+
+        function dismissAlert() {
+            const alert = document.getElementById('flash-message');
+            if (alert) {
+                alert.classList.add('fade-out');
+                setTimeout(() => alert.style.display = 'none', 500);
+            }
+        }
+
+        // Auto-dismiss alerts after 5 seconds
+        window.addEventListener('DOMContentLoaded', () => {
+            const flash = document.getElementById('flash-message');
+            if (flash) {
+                setTimeout(dismissAlert, 5000);
+            }
+        });
     </script>
 </body>
 </html>

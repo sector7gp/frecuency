@@ -1,6 +1,12 @@
-# Frecuency Management System - v1.0.0
+# Frecuency Management System - v1.4.1 📡
 
-## [1.0.0] - 2025-04-05
+## [1.4.1] - 2026-04-05
+
+### 🔄 Actualización
+Si vienes de una versión anterior (v1.2.0 o v1.3.0), por favor consulta el manual de migración:  
+👉 **[Guía de Actualización (UPDATE.md)](UPDATE.md)**
+
+---
 
 Sistema de gestión de frecuencias de radio con control de versiones, sugerencias de usuarios, aprobación administrativa y gestión de favoritos personalizados.
 
