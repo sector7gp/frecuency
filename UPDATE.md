@@ -10,18 +10,14 @@ Esta guía detalla los pasos necesarios para actualizar tu instancia de **Freque
 
 ## 🛠 Paso 1: Actualización de la Base de Datos
 
-En esta actualización se han añadido capacidades de privacidad. Debes ejecutar los siguientes comandos SQL en tu base de datos SQLite:
+En esta actualización se han añadido capacidades de privacidad. Se ha incluido un script automático para realizar la migración de forma segura:
 
-```sql
--- Añadir columna para el creador de la frecuencia
-ALTER TABLE datos ADD COLUMN id_usuario_creador INTEGER REFERENCES usuarios(id);
-
--- Añadir bandera de privacidad (por defecto 0 = pública)
-ALTER TABLE datos ADD COLUMN es_privada BOOLEAN DEFAULT 0;
-
--- (Opcional) Marcar todos los registros existentes como públicos
-UPDATE datos SET es_privada = 0 WHERE es_privada IS NULL;
+```bash
+# Ejecutar migración automática
+npm run migrate
 ```
+
+Este script detectará si las columnas `id_usuario_creador` y `es_privada` ya existen y las añadirá solo si es necesario.
 
 ---
 
