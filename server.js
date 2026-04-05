@@ -3,8 +3,17 @@ const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 const db = require('./database');
+const multer = require('multer');
+const csv = require('csv-parser');
+const fs = require('fs');
 
 const app = express();
+const upload = multer({ dest: 'uploads/' });
+
+const normalizeString = (str) => {
+  if (!str) return '';
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+};
 const PORT = process.env.PORT || 3000;
 
 // Middleware
@@ -275,6 +284,96 @@ app.post('/api/admin/usuarios/delete/:id', isAdmin, (req, res) => {
   }
   db.prepare('DELETE FROM usuarios WHERE id = ?').run(id);
   res.redirect('/dashboard?msg=user_deleted#usuarios');
+});
+
+// Importar CSV
+app.post('/api/admin/importar-csv', isAdmin, upload.single('csv'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No se subió ningún archivo' });
+
+  const results = [];
+  const imported = [];
+  const discarded = [];
+
+  // Cargar mapeos de estados y provincias
+  const estados = db.prepare('SELECT id, nombre FROM estados').all();
+  const provincias = db.prepare('SELECT id, nombre FROM provincias').all();
+
+  const getEstadoId = (nombre) => {
+    const n = normalizeString(nombre);
+    const found = estados.find(e => normalizeString(e.nombre) === n);
+    return found ? found.id : 1; // Default Ok
+  };
+
+  const getProvinciaId = (nombre) => {
+    const n = normalizeString(nombre);
+    const found = provincias.find(p => normalizeString(p.nombre) === n);
+    return found ? found.id : null;
+  };
+
+  // Cargar registros existentes para evitar duplicados (TX, RX, SEÑAL)
+  const existentes = db.prepare('SELECT tx, rx, signal FROM datos WHERE fecha_baja IS NULL').all();
+  const isDuplicate = (tx, rx, signal) => {
+    return existentes.some(e => 
+      normalizeString(e.tx) === normalizeString(tx) && 
+      normalizeString(e.rx) === normalizeString(rx) && 
+      normalizeString(e.signal) === normalizeString(signal)
+    );
+  };
+
+  fs.createReadStream(req.file.path)
+    .pipe(csv({ separator: '\t' })) // Manejar tabs o comas según el archivo del usuario
+    .on('data', (data) => results.push(data))
+    .on('end', () => {
+      const insert = db.prepare(`
+        INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      db.transaction(() => {
+        for (const row of results) {
+          // Normalizar encabezados (a veces vienen con espacios o variaciones)
+          const mem = row['Mem'] || row['mem'] || '';
+          const tx = row['TX'] || row['tx'] || '';
+          const rx = row['RX'] || row['rx'] || '';
+          const mod = row['Mod'] || row['mod'] || '';
+          const subt = row['SubT(Hz)'] || row['SubT'] || row['subt'] || '';
+          const signal = row['SEÑAL'] || row['signal'] || '';
+          const banda = row['Banda'] || row['banda'] || '';
+          const estadoNombre = row['Estado'] || row['estado'] || '';
+          const titular = row['TITULAR'] || row['titular'] || '';
+          const ciudad = row['CIUDAD / LOCALIDAD'] || row['ciudad'] || '';
+          const provinciaNombre = row['PROVINCIA'] || row['provincia'] || '';
+
+          if (!tx || !rx || !signal) {
+             discarded.push({ signal: signal || 'Sin Señal', reason: 'Faltan campos obligatorios (TX/RX/Señal)' });
+             continue;
+          }
+
+          if (isDuplicate(tx, rx, signal)) {
+            discarded.push({ signal, reason: 'Duplicado (TX/RX/Señal ya existen)' });
+          } else {
+            const id_estado = getEstadoId(estadoNombre);
+            const id_provincia = getProvinciaId(provinciaNombre);
+            insert.run(mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia);
+            imported.push(signal);
+            // Agregar a la lista de existentes dinámicamente para evitar duplicados dentro del mismo CSV
+            existentes.push({ tx, rx, signal });
+          }
+        }
+      })();
+
+      // Limpiar archivo temporal
+      fs.unlinkSync(req.file.path);
+
+      res.json({
+        success: true,
+        summary: {
+          imported: imported.length,
+          discarded: discarded.length
+        },
+        discardedRecords: discarded
+      });
+    });
 });
 
 app.listen(PORT, () => {
