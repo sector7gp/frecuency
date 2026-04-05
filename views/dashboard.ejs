@@ -566,15 +566,13 @@
                         <% }) %>
                     </select>
                 </div>
-                <div class="full-width" style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05);">
-                    <div style="display: flex; gap: 1rem;">
-                        <button type="submit" class="btn btn-primary">Actualizar</button>
-                        <button type="button" class="btn btn-secondary" onclick="closeModal('editModal')">Cerrar</button>
-                    </div>
-                    <form id="deleteForm" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar este registro?')">
-                        <button type="submit" class="btn btn-danger" style="background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2);">🗑 Eliminar</button>
-                    </form>
+                <div class="full-width" style="display: flex; gap: 1rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05);">
+                    <button type="submit" class="btn btn-primary">Actualizar</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editModal')">Cerrar</button>
                 </div>
+            </form>
+            <form id="deleteForm" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar este registro?')" style="margin-top: -3.3rem; margin-left: auto; width: fit-content; position: relative; z-index: 10;">
+                <button type="submit" class="btn btn-danger" style="background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2);">🗑 Eliminar</button>
             </form>
         </div>
     </div>
