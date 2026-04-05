@@ -1,0 +1,2 @@
+Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,RxDtcsCode,CrossMode,Mode,TStep,Skip,Power,Comment,URCALL,RPT1CALL,RPT2CALL,DVCODE
+0,test1,146.010000,-,0.600000,Cross,67.0,67.0,023,NN,023,Tone->Tone,FM,5.00,S,50W,esto es una prueba,,,,
