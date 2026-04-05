@@ -321,7 +321,9 @@ app.post('/api/admin/importar-csv', isAdmin, upload.single('csv'), async (req, r
   };
 
   fs.createReadStream(req.file.path)
-    .pipe(csv({ separator: '\t' })) // Manejar tabs o comas según el archivo del usuario
+    .pipe(csv({ 
+       mapHeaders: ({ header }) => header.trim().replace(/^[\uFEFF\u00EF\u00BB\u00BF]+/, "") 
+    }))
     .on('data', (data) => results.push(data))
     .on('end', () => {
       const insert = db.prepare(`
@@ -332,32 +334,41 @@ app.post('/api/admin/importar-csv', isAdmin, upload.single('csv'), async (req, r
       db.transaction(() => {
         for (const row of results) {
           // Normalizar encabezados (a veces vienen con espacios o variaciones)
+          // Normalizar encabezados y limpiar datos
+          const txRaw = row['TX'] || row['tx'] || '';
+          const rxRaw = row['RX'] || row['rx'] || '';
+          
           const mem = row['Mem'] || row['mem'] || '';
-          const tx = row['TX'] || row['tx'] || '';
-          const rx = row['RX'] || row['rx'] || '';
+          const tx = txRaw.toString().replace(',', '.').trim();
+          const rx = rxRaw.toString().replace(',', '.').trim();
           const mod = row['Mod'] || row['mod'] || '';
-          const subt = row['SubT(Hz)'] || row['SubT'] || row['subt'] || '';
-          const signal = row['SEÑAL'] || row['signal'] || '';
+          const subtRaw = row['SubT(Hz)'] || row['SubT'] || row['subt'] || '';
+          const subt = subtRaw.toString().replace(',', '.').trim();
+          const signal = (row['SEÑAL'] || row['signal'] || '').trim();
           const banda = row['Banda'] || row['banda'] || '';
           const estadoNombre = row['Estado'] || row['estado'] || '';
           const titular = row['TITULAR'] || row['titular'] || '';
-          const ciudad = row['CIUDAD / LOCALIDAD'] || row['ciudad'] || '';
+          const ciudadRaw = row['CIUDAD / LOCALIDAD'] || row['ciudad'] || '';
+          const ciudad = ciudadRaw.toString().replace(/\.+$/, '').trim();
           const provinciaNombre = row['PROVINCIA'] || row['provincia'] || '';
 
-          if (!tx || !rx || !signal) {
-             discarded.push({ signal: signal || 'Sin Señal', reason: 'Faltan campos obligatorios (TX/RX/Señal)' });
+          // Si no hay señal, asignar No-SIGN por defecto
+          const signalFinal = signal || 'No-SIGN';
+          
+          if (!tx || !rx) {
+             discarded.push({ signal: signalFinal, reason: 'Faltan frecuencias (TX/RX)' });
              continue;
           }
 
-          if (isDuplicate(tx, rx, signal)) {
-            discarded.push({ signal, reason: 'Duplicado (TX/RX/Señal ya existen)' });
+          if (isDuplicate(tx, rx, signalFinal)) {
+            discarded.push({ signal: signalFinal, reason: 'Duplicado (TX/RX/Señal ya existen)' });
           } else {
             const id_estado = getEstadoId(estadoNombre);
             const id_provincia = getProvinciaId(provinciaNombre);
-            insert.run(mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia);
-            imported.push(signal);
+            insert.run(mem, tx, rx, mod, subt, signalFinal, banda, id_estado, titular, ciudad, id_provincia);
+            imported.push(signalFinal);
             // Agregar a la lista de existentes dinámicamente para evitar duplicados dentro del mismo CSV
-            existentes.push({ tx, rx, signal });
+            existentes.push({ tx, rx, signal: signalFinal });
           }
         }
       })();
