@@ -47,9 +47,9 @@ Si deseas que la aplicación corra de fondo y se reinicie automáticamente:
    npm install -g pm2
    ```
 
-2. **Iniciar la aplicación**:
+2. **Iniciar la aplicación (especificando puerto)**:
    ```bash
-   pm2 start server.js --name frecuency
+   PORT=3003 pm2 start server.js --name frecuency
    ```
 
 3. **Configurar persistencia** (para que inicie al reiniciar el sistema):
