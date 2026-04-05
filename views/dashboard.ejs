@@ -324,10 +324,10 @@
                                         </td>
                                         <td class="actions-cell">
                                             <form action="/api/admin/solicitudes/<%= sol.id %>/aprobar" method="POST" style="display:inline">
-                                                <button type="submit" class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">Aprobar</button>
+                                                <button type="submit" class="btn btn-sm btn-success">Aprobar</button>
                                             </form>
                                             <form action="/api/admin/solicitudes/<%= sol.id %>/rechazar" method="POST" style="display:inline">
-                                                <button type="submit" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; background: rgba(239, 68, 68, 0.2);">X</button>
+                                                <button type="submit" class="btn btn-sm btn-danger" title="Rechazar">X</button>
                                             </form>
                                         </td>
                                     </tr>
@@ -343,7 +343,7 @@
             <div id="tab-usuarios" class="tab-content">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                     <h3>Gestión de Usuarios</h3>
-                    <button class="btn" style="width: auto; padding: 0.5rem 1rem;" onclick="openModal('addUserModal')">+ Nuevo Usuario</button>
+                    <button class="btn btn-success" onclick="openModal('addUserModal')">+ Nuevo Usuario</button>
                 </div>
                 <div class="table-container glass">
                     <table>
@@ -370,10 +370,10 @@
                                     </td>
                                     <td style="font-size: 0.75rem;"><%= new Date(u.fecha_alta).toLocaleDateString() %></td>
                                     <td class="actions-cell">
-                                        <button class="action-btn edit-btn" onclick='editUserRow(<%= JSON.stringify(u) %>)'>✎</button>
+                                        <button class="btn btn-sm btn-secondary" onclick='editUserRow(<%= JSON.stringify(u) %>)'>✎</button>
                                         <% if (u.id !== user.id) { %>
-                                            <form action="/api/admin/usuarios/delete/<%= u.id %>" method="POST" style="display:inline" onsubmit="return confirm('¿Eliminar usuario? Esta acción no se puede deshacer.')">
-                                                <button type="submit" class="action-btn delete-btn">🗑</button>
+                                            <form action="/api/admin/usuarios/delete/<%= u.id %>" method="POST" onsubmit="return confirm('¿Eliminar usuario?')">
+                                                <button class="btn btn-sm btn-danger">🗑</button>
                                             </form>
                                         <% } %>
                                     </td>
@@ -427,8 +427,8 @@
                         <% }) %>
                     </select>
                 </div>
-                <div class="full-width" style="display: flex; gap: 1rem; margin-top: 1rem;">
-                    <button type="submit" class="btn">Guardar</button>
+                <div class="full-width" style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
                     <button type="button" class="btn btn-secondary" onclick="closeModal('addModal')">Cerrar</button>
                 </div>
             </form>
