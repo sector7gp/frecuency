@@ -86,31 +86,59 @@ input:focus {
 }
 
 .btn {
-    width: 100%;
-    padding: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
     border: none;
-    border-radius: 0.5rem;
-    background: var(--primary);
+    border-radius: 0.75rem;
     color: white;
     font-weight: 600;
+    font-size: 0.875rem;
     cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    text-decoration: none;
 }
 
 .btn:hover {
-    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+    filter: brightness(1.1);
 }
 
 .btn:active {
-    transform: scale(0.98);
+    transform: translateY(0);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), #818cf8);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--success), #34d399);
 }
 
 .btn-danger {
-    background: var(--danger);
+    background: linear-gradient(135deg, var(--danger), #f87171);
 }
 
 .btn-secondary {
-    background: var(--text-muted);
+    background: linear-gradient(135deg, #475569, #64748b);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-info {
+    background: linear-gradient(135deg, var(--accent), #67e8f9);
+}
+
+/* Small button variant for tables */
+.btn-sm {
+    padding: 0.4rem 0.6rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
 }
 
 /* Dashboard */
@@ -169,10 +197,7 @@ tr:hover {
 
 /* Modal styles (simplified for now) */
 .modal-trigger {
-    background: var(--success);
-    margin-bottom: 1rem;
-    padding: 0.5rem 1rem;
-    width: auto;
+    /* Mantenido por compatibilidad pero el estilo real viene de .btn-success */
 }
 
 .actions-cell {

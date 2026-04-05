@@ -162,9 +162,9 @@
             <h2>Frecuencias</h2>
             <div style="display: flex; gap: 1rem;">
                 <% if (user.rol === 'admin') { %>
-                    <button class="btn btn-secondary" style="width: auto; padding: 0.5rem 1rem;" onclick="openModal('importModal')">📥 Importar CSV</button>
+                    <button class="btn btn-secondary" onclick="openModal('importModal')">📥 Importar CSV</button>
                 <% } %>
-                <button class="btn modal-trigger" onclick="openModal('addModal')">+ Sugerir Frecuencia</button>
+                <button class="btn btn-success" onclick="openModal('addModal')">+ Sugerir Frecuencia</button>
             </div>
         </div>
 
@@ -211,9 +211,9 @@
                                 <td><span class="badge badge-<%= row.estado_color %>"><%= row.estado_nombre %></span></td>
                                 <td><%= row.titular %></td>
                                 <td class="actions-cell">
-                                    <button class="action-btn edit-btn" title="Editar / Sugerir Cambio" onclick='editRow(<%= JSON.stringify(row) %>)'>✎</button>
-                                    <form action="/api/datos/delete/<%= row.id %>" method="POST" style="display:inline" onsubmit="return confirm('¿Solicitar eliminación?')">
-                                        <button type="submit" class="action-btn delete-btn" title="Solicitar Baja">🗑</button>
+                                    <button class="btn btn-secondary" onclick='editRow(<%= JSON.stringify(row) %>)'>✎</button>
+                                    <form action="/api/datos/delete/<%= row.id %>" method="POST" onsubmit="return confirm('¿Eliminar registro?')">
+                                        <button class="btn btn-danger">🗑</button>
                                     </form>
                                 </td>
                             </tr>
