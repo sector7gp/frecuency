@@ -28,6 +28,12 @@ db.exec(`
     codigo_aereo TEXT NOT NULL
   );
 
+  CREATE TABLE IF NOT EXISTS paises (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT NOT NULL,
+    codigo_iso TEXT
+  );
+
   CREATE TABLE IF NOT EXISTS datos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     mem TEXT,
@@ -41,6 +47,7 @@ db.exec(`
     titular TEXT,
     ciudad TEXT,
     id_provincia INTEGER,
+    id_pais INTEGER,
     id_usuario_creador INTEGER, 
     es_privada INTEGER DEFAULT 0, -- 0: Pública, 1: Privada
     fecha_alta DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -48,6 +55,7 @@ db.exec(`
     fecha_baja DATETIME,
     FOREIGN KEY(id_estado) REFERENCES estados(id),
     FOREIGN KEY(id_provincia) REFERENCES provincias(id),
+    FOREIGN KEY(id_pais) REFERENCES paises(id),
     FOREIGN KEY(id_usuario_creador) REFERENCES usuarios(id)
   );
 
@@ -126,6 +134,28 @@ if (provCount.count === 0) {
     }
 }
 
+// Semilla de países (50 principales)
+const paisesData = [
+    [1, 'Argentina', 'AR'], [2, 'Brasil', 'BR'], [3, 'Chile', 'CL'], [4, 'Uruguay', 'UY'], [5, 'Paraguay', 'PY'],
+    [6, 'Bolivia', 'BO'], [7, 'Perú', 'PE'], [8, 'Colombia', 'CO'], [9, 'Ecuador', 'EC'], [10, 'Venezuela', 'VE'],
+    [11, 'México', 'MX'], [12, 'España', 'ES'], [13, 'Estados Unidos', 'US'], [14, 'Canadá', 'CA'], [15, 'Panamá', 'PA'],
+    [16, 'Costa Rica', 'CR'], [17, 'Guatemala', 'GT'], [18, 'Honduras', 'HN'], [19, 'El Salvador', 'SV'], [20, 'Nicaragua', 'NI'],
+    [21, 'Cuba', 'CU'], [22, 'República Dominicana', 'DO'], [23, 'Puerto Rico', 'PR'], [24, 'Reino Unido', 'GB'], [25, 'Alemania', 'DE'],
+    [26, 'Francia', 'FR'], [27, 'Italia', 'IT'], [28, 'Portugal', 'PT'], [29, 'Suiza', 'CH'], [30, 'Países Bajos', 'NL'],
+    [31, 'Bélgica', 'BE'], [32, 'China', 'CN'], [33, 'Japón', 'JP'], [34, 'Corea del Sur', 'KR'], [35, 'Australia', 'AU'],
+    [36, 'Nueva Zelanda', 'NZ'], [37, 'Sudáfrica', 'ZA'], [38, 'Israel', 'IL'], [39, 'Rusia', 'RU'], [40, 'India', 'IN'],
+    [41, 'Jamaica', 'JM'], [42, 'Trinidad y Tobago', 'TT'], [43, 'Guyana', 'GY'], [44, 'Surinam', 'SR'], [45, 'Belice', 'BZ'],
+    [46, 'Andorra', 'AD'], [47, 'Luxemburgo', 'LU'], [48, 'Suecia', 'SE'], [49, 'Noruega', 'NO'], [50, 'Dinamarca', 'DK']
+];
+
+const paisCount = db.prepare('SELECT count(*) as count FROM paises').get();
+if (paisCount.count === 0) {
+    const insertPais = db.prepare('INSERT INTO paises (id, nombre, codigo_iso) VALUES (?, ?, ?)');
+    for (const row of paisesData) {
+        insertPais.run(...row);
+    }
+}
+
 // Insert initial users if they don't exist
 const adminPassword = bcrypt.hashSync('admin123', 10);
 const userPassword = bcrypt.hashSync('user123', 10);
@@ -138,15 +168,15 @@ insertUser.run('Usuario Regular', 'usuario', userPassword, 'user@frecuency.com',
 const dataCount = db.prepare('SELECT count(*) as count FROM datos').get();
 if (dataCount.count === 0) {
   const insertData = db.prepare(`
-    INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   // Map values to IDs
   const initialData = [
-    ['9', '147,270', '147,870', '', '71,9', 'LU5DVB', '2', 1, 'R C VIILLA BALLESTER', 'Villa Ballester', 1],
-    ['11', '145,420', '144,820', '', '114,8', 'LU4EV', '2', 1, 'R C CASEROS', 'Caseros', 1],
-    ['12', '147,105', '147,705', '', '123,0', 'LU5DA', '2', 1, 'R C RIO DE LA PLATA', 'Olivos', 1]
+    ['9', '147,270', '147,870', '', '71,9', 'LU5DVB', '2', 1, 'R C VIILLA BALLESTER', 'Villa Ballester', 1, 1],
+    ['11', '145,420', '144,820', '', '114,8', 'LU4EV', '2', 1, 'R C CASEROS', 'Caseros', 1, 1],
+    ['12', '147,105', '147,705', '', '123,0', 'LU5DA', '2', 1, 'R C RIO DE LA PLATA', 'Olivos', 1, 1]
   ];
 
   for (const row of initialData) {

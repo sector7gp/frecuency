@@ -298,6 +298,8 @@
                                                     Provincia <span class="sort-icon">↕</span></th>
                                                 <th onclick="sortTable('generalTable', 10)" style="cursor:pointer">
                                                     Ciudad <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('generalTable', 11)" style="cursor:pointer">
+                                                    País <span class="sort-icon">↕</span></th>
                                             </tr>
                                         </thead>
                                         <tbody id="generalTable">
@@ -344,6 +346,9 @@
                                                     <td style="font-size:0.8rem;">
                                                         <%= row.ciudad %>
                                                     </td>
+                                                    <td style="font-size:0.8rem;">
+                                                        <%= row.pais_nombre %>
+                                                    </td>
                                                 </tr>
                                                 <% }) %>
                                         </tbody>
@@ -374,9 +379,10 @@
                                                 <th onclick="sortTable('privateTable', 8)" style="cursor:pointer">Estado
                                                     <span class="sort-icon">↕</span></th>
                                                 <th onclick="sortTable('privateTable', 9)" style="cursor:pointer">
-                                                    Provincia <span class="sort-icon">↕</span></th>
-                                                <th onclick="sortTable('privateTable', 10)" style="cursor:pointer">
+                                                                                               <th onclick="sortTable('privateTable', 10)" style="cursor:pointer">
                                                     Ciudad <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('privateTable', 11)" style="cursor:pointer">
+                                                    País <span class="sort-icon">↕</span></th>
                                             </tr>
                                         </thead>
                                         <tbody id="privateTable">
@@ -442,6 +448,9 @@
                                                                 <td style="font-size: 0.8rem;">
                                                                     <%= row.ciudad %>
                                                                 </td>
+                                                                <td style="font-size: 0.8rem;">
+                                                                    <%= row.pais_nombre %>
+                                                                </td>
                                                             </tr>
                                                             <% }) %>
                                                                 <% } %>
@@ -474,6 +483,8 @@
                                                 <th onclick="sortTable('favTable', 8)" style="cursor:pointer">Provincia
                                                     <span class="sort-icon">↕</span></th>
                                                 <th onclick="sortTable('favTable', 9)" style="cursor:pointer"># Mem
+                                                    <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('favTable', 10)" style="cursor:pointer">País
                                                     <span class="sort-icon">↕</span></th>
                                                 <th></th>
                                             </tr>
@@ -530,6 +541,7 @@
                                                                         onclick="openMemModal(<%= row.id %>, '<%= row.memoria_personalizada || '' %>')"
                                                                         style="padding: 0.1rem 0.3rem;">✎</button>
                                                                 </td>
+                                                                <td style="font-size:0.8rem;"><%= row.pais_nombre %></td>
                                                                 <td>
                                                                     <button class="btn btn-sm btn-danger"
                                                                         onclick="toggleFavorite(<%= row.id %>)"
@@ -574,7 +586,7 @@
                                                                     label: 'SubT' }, {key: 'signal' , label: 'Señal' },
                                                                     {key: 'banda' , label: 'Banda' }, {key: 'titular' ,
                                                                     label: 'Titular' }, {key: 'ciudad' , label: 'Ciudad'
-                                                                    } ]; %>
+                                                                    }, {key: 'id_pais', label: 'País'} ]; %>
                                                                     <tr>
                                                                         <td style="font-size: 0.75rem;">
                                                                             <%= new
@@ -605,14 +617,19 @@
                                                                                                 </span>
                                                                                                 <span
                                                                                                     style="color: var(--danger); text-decoration: line-through; margin-right: 0.5rem;">
-                                                                                                    <%= sol['old_' +
-                                                                                                        f.key]
-                                                                                                        || '(vacío)' %>
+                                                                                                    <% if (f.key === 'id_pais') { %>
+                                                                                                        <%= sol.old_pais_nombre || '(vacío)' %>
+                                                                                                    <% } else { %>
+                                                                                                        <%= sol['old_' + f.key] || '(vacío)' %>
+                                                                                                    <% } %>
                                                                                                 </span>
                                                                                                 <span
                                                                                                     style="color: var(--success); font-weight: 700;">
-                                                                                                    <%= datos[f.key]
-                                                                                                        || '(vacío)' %>
+                                                                                                    <% if (f.key === 'id_pais') { %>
+                                                                                                        <%= (paises.find(p => p.id == datos.id_pais) || {nombre: 'Argentina'}).nombre %>
+                                                                                                    <% } else { %>
+                                                                                                        <%= datos[f.key] || '(vacío)' %>
+                                                                                                    <% } %>
                                                                                                 </span>
                                                                                             </div>
                                                                                             <% } %>
@@ -634,8 +651,7 @@
                                                                                                 <%= datos.rx %>)</div>
                                                                                         <div
                                                                                             style="color: var(--text-muted); font-size: 0.75rem;">
-                                                                                            Titular: <%= datos.titular
-                                                                                                %>
+                                                                                            Titular: <%= datos.titular %> | País: <%= (paises.find(p => p.id == datos.id_pais) || {nombre: 'Argentina'}).nombre %>
                                                                                         </div>
                                                                                         <% } %>
                                                                         </td>
@@ -723,8 +739,7 @@
                                                                         <% } %>
                                                                 </td>
                                                             </tr>
-                                                            <% %>
-                                                                <% }) %>
+                                                            <% }) %>
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -733,7 +748,7 @@
 
                                             <footer
                                                 style="margin-top: 4rem; padding: 2rem 0; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; color: var(--text-muted); font-size: 0.85rem;">
-                                                <p>© 2025 Frecuency Management System - v1.4.1</p>
+                                                <p>© 2025 Frecuency Management System - v1.4.2</p>
                                                 <p style="margin-top: 0.5rem;">Desarrollado con ❤️ por
                                                     <strong>sector7gp</strong></p>
                                                 <p style="margin-top: 1rem;">
@@ -774,7 +789,14 @@
                     </select>
                 </div>
                 <div class="form-group full-width"><label>TITULAR</label><input type="text" name="titular"></div>
-                <div class="form-group"><label>CIUDAD</label><input type="text" name="ciudad"></div>
+                <div class="form-group">
+                    <label>PAÍS</label>
+                    <select name="id_pais">
+                        <% paises.forEach(pa=> { %>
+                            <option value="<%= pa.id %>" <%= pa.id === 1 ? 'selected' : '' %>><%= pa.nombre %></option>
+                        <% }) %>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label>PROVINCIA</label>
                     <select name="id_provincia">
@@ -785,6 +807,7 @@
                             <% }) %>
                     </select>
                 </div>
+                <div class="form-group"><label>CIUDAD</label><input type="text" name="ciudad"></div>
                 <div class="full-width" style="display: flex; gap: 1rem; margin-top: 1.5rem;">
                     <button type="submit" class="btn btn-primary">Guardar</button>
                     <button type="button" class="btn btn-secondary" onclick="closeModal('addModal')">Cerrar</button>
@@ -806,6 +829,16 @@
                 <div class="form-group"><label>SubT (Hz)</label><input type="text" name="subt"></div>
                 <div class="form-group"><label>SEÑAL</label><input type="text" name="signal" required></div>
                 <div class="form-group"><label>Banda</label><input type="text" name="banda"></div>
+                <div class="form-group full-width"><label>Titular</label><input type="text" name="titular"
+                        placeholder="Efe El Titular"></div>
+                <div class="form-group">
+                    <label>País</label>
+                    <select name="id_pais">
+                        <% paises.forEach(pa=> { %>
+                            <option value="<%= pa.id %>" <%= pa.id === 1 ? 'selected' : '' %>><%= pa.nombre %></option>
+                        <% }) %>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label>Provincia</label>
                     <select name="id_provincia">
@@ -850,7 +883,14 @@
                 </div>
                 <div class="form-group full-width"><label>TITULAR</label><input type="text" name="titular"
                         id="edit_titular"></div>
-                <div class="form-group"><label>CIUDAD</label><input type="text" name="ciudad" id="edit_ciudad"></div>
+                <div class="form-group">
+                    <label>PAÍS</label>
+                    <select name="id_pais" id="edit_id_pais">
+                        <% paises.forEach(pa=> { %>
+                            <option value="<%= pa.id %>"><%= pa.nombre %></option>
+                        <% }) %>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label>PROVINCIA</label>
                     <select name="id_provincia" id="edit_id_provincia">
@@ -861,6 +901,7 @@
                             <% }) %>
                     </select>
                 </div>
+                <div class="form-group"><label>CIUDAD</label><input type="text" name="ciudad" id="edit_ciudad"></div>
                 <div class="full-width"
                     style="display: flex; gap: 1rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05);">
                     <button type="submit" class="btn btn-primary">Actualizar</button>
@@ -1043,8 +1084,9 @@
         }
 
         function editRow(data) {
-            document.getElementById('editForm').action = `/api/datos/edit/${data.id}`;
-            document.getElementById('deleteForm').action = `/api/datos/delete/${data.id}`;
+            document.getElementById('editForm').action = '/api/datos/edit/' + data.id;
+            document.getElementById('deleteForm').action = '/api/datos/delete/' + data.id;
+
             document.getElementById('edit_tx').value = data.tx || '';
             document.getElementById('edit_rx').value = data.rx || '';
             document.getElementById('edit_mod').value = data.mod || '';
@@ -1055,6 +1097,8 @@
             document.getElementById('edit_titular').value = data.titular || '';
             document.getElementById('edit_ciudad').value = data.ciudad || '';
             document.getElementById('edit_id_provincia').value = data.id_provincia || '';
+            document.getElementById('edit_id_pais').value = data.id_pais || 1;
+
             openModal('editModal');
         }
 

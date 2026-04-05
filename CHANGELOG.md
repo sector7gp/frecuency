@@ -2,6 +2,14 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.4.2] - 2026-04-05
+### Añadido
+- **Soporte Multipaís**: Nueva tabla de países (`paises`) con 50 registros iniciales, priorizando el Cono Sur.
+- **Internacionalización**: Columna "País" añadida a todas las tablas y formularios de alta/edición.
+- **Migración v1.4.2**: Script automatizado para añadir soporte de países a instalaciones existentes.
+- **Regionalización**: Preselección automática de "Argentina" (ID 1) en nuevos registros para agilizar la carga.
+- **Panel de Administración**: Se incluye la información del país en la vista de comparativa de cambios para revisiones.
+
 ## [1.4.1] - 2026-04-05
 
 ### ✨ Unificación y Renombre

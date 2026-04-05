@@ -70,17 +70,20 @@ app.get('/dashboard', isAuthenticated, (req, res) => {
   // Datos generales con info de favoritos si existen para este usuario
   const data = db.prepare(`
     SELECT d.*, e.nombre as estado_nombre, e.color as estado_color, p.nombre as provincia_nombre, p.codigo_aereo,
+           pa.nombre as pais_nombre,
            f.memoria_personalizada,
            CASE WHEN f.id IS NOT NULL THEN 1 ELSE 0 END as es_favorito
     FROM datos d
     LEFT JOIN estados e ON d.id_estado = e.id
     LEFT JOIN provincias p ON d.id_provincia = p.id
+    LEFT JOIN paises pa ON d.id_pais = pa.id
     LEFT JOIN favoritos f ON d.id = f.id_dato AND f.id_usuario = ?
     WHERE d.fecha_baja IS NULL AND (d.es_privada = 0 OR d.id_usuario_creador = ?)
   `).all(req.session.user.id, req.session.user.id);
   
   const estados = db.prepare('SELECT * FROM estados').all();
   const provincias = db.prepare('SELECT * FROM provincias').all();
+  const paises = db.prepare('SELECT * FROM paises').all();
 
   // Cargar últimas 5 notificaciones no leídas
   const notificaciones = db.prepare('SELECT * FROM notificaciones WHERE id_usuario = ? AND leida = 0 ORDER BY fecha DESC LIMIT 5')
@@ -95,12 +98,14 @@ app.get('/dashboard', isAuthenticated, (req, res) => {
              d.mem as old_mem, d.tx as old_tx, d.rx as old_rx, d.mod as old_mod, 
              d.subt as old_subt, d.signal as old_signal, d.banda as old_banda,
              d.titular as old_titular, d.ciudad as old_ciudad,
-             es.nombre as old_estado_nombre, pr.nombre as old_provincia_nombre
+             es.nombre as old_estado_nombre, pr.nombre as old_provincia_nombre,
+             pa.nombre as old_pais_nombre
       FROM solicitudes_cambios s
       JOIN usuarios u ON s.id_usuario = u.id
       LEFT JOIN datos d ON s.id_dato = d.id
       LEFT JOIN estados es ON d.id_estado = es.id
       LEFT JOIN provincias pr ON d.id_provincia = pr.id
+      LEFT JOIN paises pa ON d.id_pais = pa.id
       WHERE s.estado = 'pendiente'
       ORDER BY s.fecha_solicitud DESC
     `).all();
@@ -113,6 +118,7 @@ app.get('/dashboard', isAuthenticated, (req, res) => {
     data, 
     estados, 
     provincias, 
+    paises,
     solicitudes,
     usuarios_lista,
     notificaciones,
@@ -122,14 +128,14 @@ app.get('/dashboard', isAuthenticated, (req, res) => {
 
 // API Endpoints
 app.post('/api/datos', isAuthenticated, (req, res) => {
-  const { mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia } = req.body;
+  const { mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais } = req.body;
   
   if (req.session.user.rol === 'admin') {
     const insert = db.prepare(`
-      INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
-    insert.run(mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia);
+    insert.run(mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais);
   } else {
     // Usuario regular: crear solicitud
     const stmt = db.prepare('INSERT INTO solicitudes_cambios (id_usuario, tipo, datos_json) VALUES (?, ?, ?)');
@@ -139,12 +145,12 @@ app.post('/api/datos', isAuthenticated, (req, res) => {
 });
 // Crear Frecuencia Privada (Mis Frecuencias)
 app.post('/api/mis-frecuencias', isAuthenticated, (req, res) => {
-  const { mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia } = req.body;
+  const { mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais } = req.body;
   const insert = db.prepare(`
-    INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_usuario_creador, es_privada)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+    INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais, id_usuario_creador, es_privada)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
   `);
-  insert.run(mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, req.session.user.id);
+  insert.run(mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais, req.session.user.id);
   res.redirect('/dashboard?msg=guardado&tab=mis-frecuencias');
 });
 
@@ -170,17 +176,17 @@ app.post('/api/datos/hacer-publica/:id', isAuthenticated, (req, res) => {
 
 app.post('/api/datos/edit/:id', isAuthenticated, (req, res) => {
   const { id } = req.params;
-  const { tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia } = req.body;
+  const { mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais } = req.body;
   
   const dato = db.prepare('SELECT es_privada, id_usuario_creador FROM datos WHERE id = ?').get(id);
   
   if (req.session.user.rol === 'admin' || (dato && dato.es_privada && dato.id_usuario_creador === req.session.user.id)) {
     const update = db.prepare(`
       UPDATE datos 
-      SET tx = ?, rx = ?, mod = ?, subt = ?, signal = ?, banda = ?, id_estado = ?, titular = ?, ciudad = ?, id_provincia = ?, fecha_modificacion = CURRENT_TIMESTAMP
+      SET mem = ?, tx = ?, rx = ?, mod = ?, subt = ?, signal = ?, banda = ?, id_estado = ?, titular = ?, ciudad = ?, id_provincia = ?, id_pais = ?, fecha_modificacion = CURRENT_TIMESTAMP
       WHERE id = ?
     `);
-    update.run(tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id);
+    update.run(mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais, id);
     res.redirect('/dashboard?msg=actualizado');
   } else {
     // Usuario regular editando pública: crear solicitud de edición
@@ -238,17 +244,17 @@ app.post('/api/admin/solicitudes/:id/aprobar', isAdmin, (req, res) => {
   
   if (solicitud.tipo === 'alta') {
     const insert = db.prepare(`
-      INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_usuario_creador, es_privada)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
+      INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais, id_usuario_creador, es_privada)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
     `);
-    insert.run(datos.mem, datos.tx, datos.rx, datos.mod, datos.subt, datos.signal, datos.banda, datos.id_estado, datos.titular, datos.ciudad, datos.id_provincia, solicitud.id_usuario);
+    insert.run(datos.mem, datos.tx, datos.rx, datos.mod, datos.subt, datos.signal, datos.banda, datos.id_estado, datos.titular, datos.ciudad, datos.id_provincia, datos.id_pais, solicitud.id_usuario);
   } else if (solicitud.tipo === 'edicion') {
     const update = db.prepare(`
       UPDATE datos 
-      SET mem = ?, tx = ?, rx = ?, mod = ?, subt = ?, signal = ?, banda = ?, id_estado = ?, titular = ?, ciudad = ?, id_provincia = ?, fecha_modificacion = CURRENT_TIMESTAMP
+      SET mem = ?, tx = ?, rx = ?, mod = ?, subt = ?, signal = ?, banda = ?, id_estado = ?, titular = ?, ciudad = ?, id_provincia = ?, id_pais = ?, fecha_modificacion = CURRENT_TIMESTAMP
       WHERE id = ?
     `);
-    update.run(datos.mem, datos.tx, datos.rx, datos.mod, datos.subt, datos.signal, datos.banda, datos.id_estado, datos.titular, datos.ciudad, datos.id_provincia, solicitud.id_dato);
+    update.run(datos.mem, datos.tx, datos.rx, datos.mod, datos.subt, datos.signal, datos.banda, datos.id_estado, datos.titular, datos.ciudad, datos.id_provincia, datos.id_pais, solicitud.id_dato);
   } else if (solicitud.tipo === 'baja') {
     db.prepare('UPDATE datos SET fecha_baja = CURRENT_TIMESTAMP WHERE id = ?').run(solicitud.id_dato);
   } else if (solicitud.tipo === 'publicar') {
@@ -335,6 +341,7 @@ app.post('/api/admin/importar-csv', isAdmin, upload.single('csv'), async (req, r
   // Cargar mapeos de estados y provincias
   const estados = db.prepare('SELECT id, nombre FROM estados').all();
   const provincias = db.prepare('SELECT id, nombre FROM provincias').all();
+  const paises = db.prepare('SELECT id, nombre FROM paises').all();
 
   const getEstadoId = (nombre) => {
     const n = normalizeString(nombre);
@@ -346,6 +353,12 @@ app.post('/api/admin/importar-csv', isAdmin, upload.single('csv'), async (req, r
     const n = normalizeString(nombre);
     const found = provincias.find(p => normalizeString(p.nombre) === n);
     return found ? found.id : null;
+  };
+
+  const getPaisId = (nombre) => {
+    const n = normalizeString(nombre);
+    const found = paises.find(pa => normalizeString(pa.nombre) === n);
+    return found ? found.id : 1; // Default Argentina (ID 1)
   };
 
   // Cargar registros existentes para evitar duplicados (TX, RX, SEÑAL)
@@ -365,8 +378,8 @@ app.post('/api/admin/importar-csv', isAdmin, upload.single('csv'), async (req, r
     .on('data', (data) => results.push(data))
     .on('end', () => {
       const insert = db.prepare(`
-        INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `);
 
       db.transaction(() => {
@@ -403,7 +416,10 @@ app.post('/api/admin/importar-csv', isAdmin, upload.single('csv'), async (req, r
           } else {
             const id_estado = getEstadoId(estadoNombre);
             const id_provincia = getProvinciaId(provinciaNombre);
-            insert.run(mem, tx, rx, mod, subt, signalFinal, banda, id_estado, titular, ciudad, id_provincia);
+            const paisNombre = row['PAIS'] || row['país'] || row['pais'] || 'Argentina';
+            const id_pais = getPaisId(paisNombre);
+
+            insert.run(mem, tx, rx, mod, subt, signalFinal, banda, id_estado, titular, ciudad, id_provincia, id_pais);
             imported.push(signalFinal);
             // Agregar a la lista de existentes dinámicamente para evitar duplicados dentro del mismo CSV
             existentes.push({ tx, rx, signal: signalFinal });
