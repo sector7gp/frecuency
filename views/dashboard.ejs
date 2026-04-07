@@ -300,6 +300,8 @@
                                                     Ciudad <span class="sort-icon">↕</span></th>
                                                 <th onclick="sortTable('generalTable', 11)" style="cursor:pointer">
                                                     País <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('generalTable', 12)" style="cursor:pointer">
+                                                    Comentario <span class="sort-icon">↕</span></th>
                                             </tr>
                                         </thead>
                                         <tbody id="generalTable">
@@ -315,7 +317,7 @@
                                                     <td>
                                                         <button onclick='editRow(<%= JSON.stringify(row) %>)'
                                                             style="background:none; border:none; color:var(--accent); cursor:pointer; text-align:left; padding:0; font-weight:600; text-decoration:underline;">
-                                                            <%= row.titular %>
+                                                            <%= row.titular || row.signal || 'Sin Nombre' %>
                                                         </button>
                                                     </td>
                                                     <td><strong>
@@ -349,6 +351,9 @@
                                                     <td style="font-size:0.8rem;">
                                                         <%= row.pais_nombre %>
                                                     </td>
+                                                    <td style="font-size:0.75rem; color: var(--text-muted); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<%= row.comentario %>">
+                                                        <%= row.comentario %>
+                                                    </td>
                                                 </tr>
                                                 <% }) %>
                                         </tbody>
@@ -376,13 +381,14 @@
                                                     <span class="sort-icon">↕</span></th>
                                                 <th onclick="sortTable('privateTable', 7)" style="cursor:pointer">Banda
                                                     <span class="sort-icon">↕</span></th>
-                                                <th onclick="sortTable('privateTable', 8)" style="cursor:pointer">Estado
+                                                <th onclick="sortTable('privateTable', 9)" style="cursor:pointer">Estado
                                                     <span class="sort-icon">↕</span></th>
-                                                <th onclick="sortTable('privateTable', 9)" style="cursor:pointer">
-                                                                                               <th onclick="sortTable('privateTable', 10)" style="cursor:pointer">
+                                                <th onclick="sortTable('privateTable', 10)" style="cursor:pointer">
                                                     Ciudad <span class="sort-icon">↕</span></th>
                                                 <th onclick="sortTable('privateTable', 11)" style="cursor:pointer">
                                                     País <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('privateTable', 12)" style="cursor:pointer">
+                                                    Comentario <span class="sort-icon">↕</span></th>
                                             </tr>
                                         </thead>
                                         <tbody id="privateTable">
@@ -486,6 +492,8 @@
                                                     <span class="sort-icon">↕</span></th>
                                                 <th onclick="sortTable('favTable', 10)" style="cursor:pointer">País
                                                     <span class="sort-icon">↕</span></th>
+                                                <th onclick="sortTable('favTable', 11)" style="cursor:pointer">Comentario
+                                                    <span class="sort-icon">↕</span></th>
                                                 <th></th>
                                             </tr>
                                         </thead>
@@ -503,7 +511,7 @@
                                                                     <button
                                                                         onclick='editRow(<%= JSON.stringify(row) %>)'
                                                                         style="background:none; border:none; color:var(--accent); cursor:pointer; text-align:left; padding:0; font-weight:600; text-decoration:underline;">
-                                                                        <%= row.titular %>
+                                                                        <%= row.titular || row.signal || 'Sin Nombre' %>
                                                                     </button>
                                                                 </td>
                                                                 <td><strong>
@@ -542,6 +550,9 @@
                                                                         style="padding: 0.1rem 0.3rem;">✎</button>
                                                                 </td>
                                                                 <td style="font-size:0.8rem;"><%= row.pais_nombre %></td>
+                                                                <td style="font-size:0.75rem; color: var(--text-muted); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<%= row.comentario %>">
+                                                                    <%= row.comentario %>
+                                                                </td>
                                                                 <td>
                                                                     <button class="btn btn-sm btn-danger"
                                                                         onclick="toggleFavorite(<%= row.id %>)"
@@ -586,7 +597,11 @@
                                                                     label: 'SubT' }, {key: 'signal' , label: 'Señal' },
                                                                     {key: 'banda' , label: 'Banda' }, {key: 'titular' ,
                                                                     label: 'Titular' }, {key: 'ciudad' , label: 'Ciudad'
-                                                                    }, {key: 'id_pais', label: 'País'} ]; %>
+                                                                    }, {key: 'id_pais', label: 'País'},
+                                                                    {key: 'comentario', label: 'Comentario'}, {key: 'duplex', label: 'Duplex'},
+                                                                    {key: 'offset', label: 'Offset'}, {key: 'tone', label: 'Tone'},
+                                                                    {key: 'r_tone_freq', label: 'rTone'}, {key: 'c_tone_freq', label: 'cTone'},
+                                                                    {key: 'power', label: 'Power'} ]; %>
                                                                     <tr>
                                                                         <td style="font-size: 0.75rem;">
                                                                             <%= new
@@ -808,6 +823,28 @@
                     </select>
                 </div>
                 <div class="form-group"><label>CIUDAD</label><input type="text" name="ciudad"></div>
+                <div class="form-group full-width"><label>Comentario</label><textarea name="comentario" rows="2" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 0.5rem; border-radius: 0.5rem;"></textarea></div>
+                
+                <div class="full-width" style="margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem;">
+                    <details>
+                        <summary style="cursor: pointer; font-size: 0.8rem; color: var(--accent); font-weight: 600;">Campos Técnicos (CHIRP / Avanzado)</summary>
+                        <div class="grid-form" style="margin-top: 1rem;">
+                            <div class="form-group"><label>Duplex</label><input type="text" name="duplex" placeholder="+, -, off, split"></div>
+                            <div class="form-group"><label>Offset</label><input type="text" name="offset" placeholder="0.600"></div>
+                            <div class="form-group"><label>Tone</label><input type="text" name="tone"></div>
+                            <div class="form-group"><label>rToneFreq</label><input type="text" name="r_tone_freq"></div>
+                            <div class="form-group"><label>cToneFreq</label><input type="text" name="c_tone_freq"></div>
+                            <div class="form-group"><label>DtcsCode</label><input type="text" name="dtcs_code"></div>
+                            <div class="form-group"><label>DtcsPolarity</label><input type="text" name="dtcs_polarity"></div>
+                            <div class="form-group"><label>RxDtcsCode</label><input type="text" name="rx_dtcs_code"></div>
+                            <div class="form-group"><label>CrossMode</label><input type="text" name="cross_mode"></div>
+                            <div class="form-group"><label>TStep</label><input type="text" name="t_step"></div>
+                            <div class="form-group"><label>Skip</label><input type="text" name="skip"></div>
+                            <div class="form-group"><label>Power</label><input type="text" name="power"></div>
+                        </div>
+                    </details>
+                </div>
+
                 <div class="full-width" style="display: flex; gap: 1rem; margin-top: 1.5rem;">
                     <button type="submit" class="btn btn-primary">Guardar</button>
                     <button type="button" class="btn btn-secondary" onclick="closeModal('addModal')">Cerrar</button>
@@ -850,6 +887,28 @@
                     </select>
                 </div>
                 <div class="form-group"><label>Ciudad</label><input type="text" name="ciudad"></div>
+                <div class="form-group full-width"><label>Comentario</label><textarea name="comentario" rows="2" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 0.5rem; border-radius: 0.5rem;"></textarea></div>
+
+                <div class="full-width" style="margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem;">
+                    <details>
+                        <summary style="cursor: pointer; font-size: 0.8rem; color: var(--warning); font-weight: 600;">Campos Técnicos (CHIRP / Avanzado)</summary>
+                        <div class="grid-form" style="margin-top: 1rem;">
+                            <div class="form-group"><label>Duplex</label><input type="text" name="duplex" placeholder="+, -, off, split"></div>
+                            <div class="form-group"><label>Offset</label><input type="text" name="offset" placeholder="0.600"></div>
+                            <div class="form-group"><label>Tone</label><input type="text" name="tone"></div>
+                            <div class="form-group"><label>rToneFreq</label><input type="text" name="r_tone_freq"></div>
+                            <div class="form-group"><label>cToneFreq</label><input type="text" name="c_tone_freq"></div>
+                            <div class="form-group"><label>DtcsCode</label><input type="text" name="dtcs_code"></div>
+                            <div class="form-group"><label>DtcsPolarity</label><input type="text" name="dtcs_polarity"></div>
+                            <div class="form-group"><label>RxDtcsCode</label><input type="text" name="rx_dtcs_code"></div>
+                            <div class="form-group"><label>CrossMode</label><input type="text" name="cross_mode"></div>
+                            <div class="form-group"><label>TStep</label><input type="text" name="t_step"></div>
+                            <div class="form-group"><label>Skip</label><input type="text" name="skip"></div>
+                            <div class="form-group"><label>Power</label><input type="text" name="power"></div>
+                        </div>
+                    </details>
+                </div>
+
                 <div class="full-width" style="display: flex; gap: 1rem; margin-top: 1.5rem;">
                     <button type="submit" class="btn btn-primary">Guardar Privada</button>
                     <button type="button" class="btn btn-secondary"
@@ -902,6 +961,28 @@
                     </select>
                 </div>
                 <div class="form-group"><label>CIUDAD</label><input type="text" name="ciudad" id="edit_ciudad"></div>
+                <div class="form-group full-width"><label>Comentario</label><textarea name="comentario" id="edit_comentario" rows="2" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 0.5rem; border-radius: 0.5rem;"></textarea></div>
+
+                <div class="full-width" style="margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem;">
+                    <details>
+                        <summary style="cursor: pointer; font-size: 0.8rem; color: var(--accent); font-weight: 600;">Campos Técnicos (CHIRP / Avanzado)</summary>
+                        <div class="grid-form" style="margin-top: 1rem;">
+                            <div class="form-group"><label>Duplex</label><input type="text" name="duplex" id="edit_duplex"></div>
+                            <div class="form-group"><label>Offset</label><input type="text" name="offset" id="edit_offset"></div>
+                            <div class="form-group"><label>Tone</label><input type="text" name="tone" id="edit_tone"></div>
+                            <div class="form-group"><label>rToneFreq</label><input type="text" name="r_tone_freq" id="edit_r_tone_freq"></div>
+                            <div class="form-group"><label>cToneFreq</label><input type="text" name="c_tone_freq" id="edit_c_tone_freq"></div>
+                            <div class="form-group"><label>DtcsCode</label><input type="text" name="dtcs_code" id="edit_dtcs_code"></div>
+                            <div class="form-group"><label>DtcsPolarity</label><input type="text" name="dtcs_polarity" id="edit_dtcs_polarity"></div>
+                            <div class="form-group"><label>RxDtcsCode</label><input type="text" name="rx_dtcs_code" id="edit_rx_dtcs_code"></div>
+                            <div class="form-group"><label>CrossMode</label><input type="text" name="cross_mode" id="edit_cross_mode"></div>
+                            <div class="form-group"><label>TStep</label><input type="text" name="t_step" id="edit_t_step"></div>
+                            <div class="form-group"><label>Skip</label><input type="text" name="skip" id="edit_skip"></div>
+                            <div class="form-group"><label>Power</label><input type="text" name="power" id="edit_power"></div>
+                        </div>
+                    </details>
+                </div>
+
                 <div class="full-width"
                     style="display: flex; gap: 1rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05);">
                     <button type="submit" class="btn btn-primary">Actualizar</button>
@@ -974,6 +1055,13 @@
                 <strong>Encabezados requeridos:</strong> TX, RX, SEÑAL.
             </p>
             <form id="importForm" onsubmit="handleImport(event)" enctype="multipart/form-data">
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label>Formato de Archivo</label>
+                    <select name="formato" style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 0.5rem; cursor: pointer;">
+                        <option value="rcb">RCB (Estándar del sistema)</option>
+                        <option value="chirp">CHIRP (Radio estándar)</option>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label>Archivo CSV</label>
                     <input type="file" name="csv" accept=".csv" required
@@ -1098,6 +1186,21 @@
             document.getElementById('edit_ciudad').value = data.ciudad || '';
             document.getElementById('edit_id_provincia').value = data.id_provincia || '';
             document.getElementById('edit_id_pais').value = data.id_pais || 1;
+            
+            // CHIRP Fields
+            document.getElementById('edit_comentario').value = data.comentario || '';
+            document.getElementById('edit_duplex').value = data.duplex || '';
+            document.getElementById('edit_offset').value = data.offset || '';
+            document.getElementById('edit_tone').value = data.tone || '';
+            document.getElementById('edit_r_tone_freq').value = data.r_tone_freq || '';
+            document.getElementById('edit_c_tone_freq').value = data.c_tone_freq || '';
+            document.getElementById('edit_dtcs_code').value = data.dtcs_code || '';
+            document.getElementById('edit_dtcs_polarity').value = data.dtcs_polarity || '';
+            document.getElementById('edit_rx_dtcs_code').value = data.rx_dtcs_code || '';
+            document.getElementById('edit_cross_mode').value = data.cross_mode || '';
+            document.getElementById('edit_t_step').value = data.t_step || '';
+            document.getElementById('edit_skip').value = data.skip || '';
+            document.getElementById('edit_power').value = data.power || '';
 
             openModal('editModal');
         }

@@ -99,7 +99,12 @@ app.get('/dashboard', isAuthenticated, (req, res) => {
              d.subt as old_subt, d.signal as old_signal, d.banda as old_banda,
              d.titular as old_titular, d.ciudad as old_ciudad,
              es.nombre as old_estado_nombre, pr.nombre as old_provincia_nombre,
-             pa.nombre as old_pais_nombre
+             pa.nombre as old_pais_nombre,
+             d.comentario as old_comentario, d.duplex as old_duplex, d.offset as old_offset,
+             d.tone as old_tone, d.r_tone_freq as old_r_tone_freq, d.c_tone_freq as old_c_tone_freq,
+             d.dtcs_code as old_dtcs_code, d.dtcs_polarity as old_dtcs_polarity,
+             d.rx_dtcs_code as old_rx_dtcs_code, d.cross_mode as old_cross_mode,
+             d.t_step as old_t_step, d.skip as old_skip, d.power as old_power
       FROM solicitudes_cambios s
       JOIN usuarios u ON s.id_usuario = u.id
       LEFT JOIN datos d ON s.id_dato = d.id
@@ -128,14 +133,20 @@ app.get('/dashboard', isAuthenticated, (req, res) => {
 
 // API Endpoints
 app.post('/api/datos', isAuthenticated, (req, res) => {
-  const { mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais } = req.body;
+  const { mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais,
+          comentario, duplex, offset, tone, r_tone_freq, c_tone_freq, dtcs_code, dtcs_polarity,
+          rx_dtcs_code, cross_mode, t_step, skip, power } = req.body;
   
   if (req.session.user.rol === 'admin') {
     const insert = db.prepare(`
-      INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais,
+                        comentario, duplex, offset, tone, r_tone_freq, c_tone_freq, dtcs_code, dtcs_polarity,
+                        rx_dtcs_code, cross_mode, t_step, skip, power)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
-    insert.run(mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais);
+    insert.run(mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais,
+               comentario, duplex, offset, tone, r_tone_freq, c_tone_freq, dtcs_code, dtcs_polarity,
+               rx_dtcs_code, cross_mode, t_step, skip, power);
   } else {
     // Usuario regular: crear solicitud
     const stmt = db.prepare('INSERT INTO solicitudes_cambios (id_usuario, tipo, datos_json) VALUES (?, ?, ?)');
@@ -145,12 +156,18 @@ app.post('/api/datos', isAuthenticated, (req, res) => {
 });
 // Crear Frecuencia Privada (Mis Frecuencias)
 app.post('/api/mis-frecuencias', isAuthenticated, (req, res) => {
-  const { mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais } = req.body;
+  const { mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais,
+          comentario, duplex, offset, tone, r_tone_freq, c_tone_freq, dtcs_code, dtcs_polarity,
+          rx_dtcs_code, cross_mode, t_step, skip, power } = req.body;
   const insert = db.prepare(`
-    INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais, id_usuario_creador, es_privada)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+    INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais, id_usuario_creador, es_privada,
+                      comentario, duplex, offset, tone, r_tone_freq, c_tone_freq, dtcs_code, dtcs_polarity,
+                      rx_dtcs_code, cross_mode, t_step, skip, power)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
-  insert.run(mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais, req.session.user.id);
+  insert.run(mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais, req.session.user.id,
+             comentario, duplex, offset, tone, r_tone_freq, c_tone_freq, dtcs_code, dtcs_polarity,
+             rx_dtcs_code, cross_mode, t_step, skip, power);
   res.redirect('/dashboard?msg=guardado&tab=mis-frecuencias');
 });
 
@@ -176,17 +193,23 @@ app.post('/api/datos/hacer-publica/:id', isAuthenticated, (req, res) => {
 
 app.post('/api/datos/edit/:id', isAuthenticated, (req, res) => {
   const { id } = req.params;
-  const { mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais } = req.body;
+  const { mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais,
+          comentario, duplex, offset, tone, r_tone_freq, c_tone_freq, dtcs_code, dtcs_polarity,
+          rx_dtcs_code, cross_mode, t_step, skip, power } = req.body;
   
   const dato = db.prepare('SELECT es_privada, id_usuario_creador FROM datos WHERE id = ?').get(id);
   
   if (req.session.user.rol === 'admin' || (dato && dato.es_privada && dato.id_usuario_creador === req.session.user.id)) {
     const update = db.prepare(`
       UPDATE datos 
-      SET mem = ?, tx = ?, rx = ?, mod = ?, subt = ?, signal = ?, banda = ?, id_estado = ?, titular = ?, ciudad = ?, id_provincia = ?, id_pais = ?, fecha_modificacion = CURRENT_TIMESTAMP
+      SET mem = ?, tx = ?, rx = ?, mod = ?, subt = ?, signal = ?, banda = ?, id_estado = ?, titular = ?, ciudad = ?, id_provincia = ?, id_pais = ?, 
+          comentario = ?, duplex = ?, offset = ?, tone = ?, r_tone_freq = ?, c_tone_freq = ?, dtcs_code = ?, dtcs_polarity = ?, 
+          rx_dtcs_code = ?, cross_mode = ?, t_step = ?, skip = ?, power = ?, fecha_modificacion = CURRENT_TIMESTAMP
       WHERE id = ?
     `);
-    update.run(mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais, id);
+    update.run(mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais, 
+               comentario, duplex, offset, tone, r_tone_freq, c_tone_freq, dtcs_code, dtcs_polarity,
+               rx_dtcs_code, cross_mode, t_step, skip, power, id);
     res.redirect('/dashboard?msg=actualizado');
   } else {
     // Usuario regular editando pública: crear solicitud de edición
@@ -244,17 +267,25 @@ app.post('/api/admin/solicitudes/:id/aprobar', isAdmin, (req, res) => {
   
   if (solicitud.tipo === 'alta') {
     const insert = db.prepare(`
-      INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais, id_usuario_creador, es_privada)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
+      INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais, id_usuario_creador, es_privada,
+                        comentario, duplex, offset, tone, r_tone_freq, c_tone_freq, dtcs_code, dtcs_polarity,
+                        rx_dtcs_code, cross_mode, t_step, skip, power)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
-    insert.run(datos.mem, datos.tx, datos.rx, datos.mod, datos.subt, datos.signal, datos.banda, datos.id_estado, datos.titular, datos.ciudad, datos.id_provincia, datos.id_pais, solicitud.id_usuario);
+    insert.run(datos.mem, datos.tx, datos.rx, datos.mod, datos.subt, datos.signal, datos.banda, datos.id_estado, datos.titular, datos.ciudad, datos.id_provincia, datos.id_pais, solicitud.id_usuario,
+               datos.comentario, datos.duplex, datos.offset, datos.tone, datos.r_tone_freq, datos.c_tone_freq, datos.dtcs_code, datos.dtcs_polarity,
+               datos.rx_dtcs_code, datos.cross_mode, datos.t_step, datos.skip, datos.power);
   } else if (solicitud.tipo === 'edicion') {
     const update = db.prepare(`
       UPDATE datos 
-      SET mem = ?, tx = ?, rx = ?, mod = ?, subt = ?, signal = ?, banda = ?, id_estado = ?, titular = ?, ciudad = ?, id_provincia = ?, id_pais = ?, fecha_modificacion = CURRENT_TIMESTAMP
+      SET mem = ?, tx = ?, rx = ?, mod = ?, subt = ?, signal = ?, banda = ?, id_estado = ?, titular = ?, ciudad = ?, id_provincia = ?, id_pais = ?, 
+          comentario = ?, duplex = ?, offset = ?, tone = ?, r_tone_freq = ?, c_tone_freq = ?, dtcs_code = ?, dtcs_polarity = ?, 
+          rx_dtcs_code = ?, cross_mode = ?, t_step = ?, skip = ?, power = ?, fecha_modificacion = CURRENT_TIMESTAMP
       WHERE id = ?
     `);
-    update.run(datos.mem, datos.tx, datos.rx, datos.mod, datos.subt, datos.signal, datos.banda, datos.id_estado, datos.titular, datos.ciudad, datos.id_provincia, datos.id_pais, solicitud.id_dato);
+    update.run(datos.mem, datos.tx, datos.rx, datos.mod, datos.subt, datos.signal, datos.banda, datos.id_estado, datos.titular, datos.ciudad, datos.id_provincia, datos.id_pais, 
+               datos.comentario, datos.duplex, datos.offset, datos.tone, datos.r_tone_freq, datos.c_tone_freq, datos.dtcs_code, datos.dtcs_polarity,
+               datos.rx_dtcs_code, datos.cross_mode, datos.t_step, datos.skip, datos.power, solicitud.id_dato);
   } else if (solicitud.tipo === 'baja') {
     db.prepare('UPDATE datos SET fecha_baja = CURRENT_TIMESTAMP WHERE id = ?').run(solicitud.id_dato);
   } else if (solicitud.tipo === 'publicar') {
@@ -378,51 +409,96 @@ app.post('/api/admin/importar-csv', isAdmin, upload.single('csv'), async (req, r
     .on('data', (data) => results.push(data))
     .on('end', () => {
       const insert = db.prepare(`
-        INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO datos (mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais,
+                          comentario, duplex, offset, tone, r_tone_freq, c_tone_freq, dtcs_code, dtcs_polarity,
+                          rx_dtcs_code, cross_mode, t_step, skip, power)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `);
+
+      const { formato } = req.body;
 
       db.transaction(() => {
         for (const row of results) {
-          // Normalizar encabezados (a veces vienen con espacios o variaciones)
-          // Normalizar encabezados y limpiar datos
-          const txRaw = row['TX'] || row['tx'] || '';
-          const rxRaw = row['RX'] || row['rx'] || '';
-          
-          const mem = row['Mem'] || row['mem'] || '';
-          const tx = txRaw.toString().replace(',', '.').trim();
-          const rx = rxRaw.toString().replace(',', '.').trim();
-          const mod = row['Mod'] || row['mod'] || '';
-          const subtRaw = row['SubT(Hz)'] || row['SubT'] || row['subt'] || '';
-          const subt = subtRaw.toString().replace(',', '.').trim();
-          const signal = (row['SEÑAL'] || row['signal'] || '').trim();
-          const banda = row['Banda'] || row['banda'] || '';
-          const estadoNombre = row['Estado'] || row['estado'] || '';
-          const titular = row['TITULAR'] || row['titular'] || '';
-          const ciudadRaw = row['CIUDAD / LOCALIDAD'] || row['ciudad'] || '';
-          const ciudad = ciudadRaw.toString().replace(/\.+$/, '').trim();
-          const provinciaNombre = row['PROVINCIA'] || row['provincia'] || '';
+          let mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais;
+          let comentario, duplex, offset, tone, r_tone_freq, c_tone_freq, dtcs_code, dtcs_polarity, rx_dtcs_code, cross_mode, t_step, skip, power;
 
-          // Si no hay señal, asignar No-SIGN por defecto
-          const signalFinal = signal || 'No-SIGN';
+          if (formato === 'chirp') {
+            mem = (row['Location'] || '').trim();
+            rx = (row['Frequency'] || '').toString().replace(',', '.').trim();
+            signal = (row['Name'] || 'No-SIGN').trim();
+            duplex = (row['Duplex'] || '').trim();
+            offset = (row['Offset'] || '0').toString().replace(',', '.').trim();
+            mod = (row['Mode'] || '').trim();
+            comentario = (row['Comment'] || '').trim();
+            tone = (row['Tone'] || '').trim();
+            r_tone_freq = (row['rToneFreq'] || '').toString().replace(',', '.').trim();
+            c_tone_freq = (row['cToneFreq'] || '').toString().replace(',', '.').trim();
+            dtcs_code = (row['DtcsCode'] || '').trim();
+            dtcs_polarity = (row['DtcsPolarity'] || '').trim();
+            rx_dtcs_code = (row['RxDtcsCode'] || '').trim();
+            cross_mode = (row['CrossMode'] || '').trim();
+            t_step = (row['TStep'] || '').trim();
+            skip = (row['Skip'] || '').trim();
+            power = (row['Power'] || '').trim();
+            
+            subt = c_tone_freq || r_tone_freq || '';
+
+            // Cálculo de TX para CHIRP
+            const rxNum = parseFloat(rx);
+            const offsetNum = parseFloat(offset) || 0;
+            if (!isNaN(rxNum)) {
+              if (duplex === '+') tx = (rxNum + offsetNum).toFixed(6);
+              else if (duplex === '-') tx = (rxNum - offsetNum).toFixed(6);
+              else if (duplex === 'split') tx = offset;
+              else tx = rx;
+            } else {
+              tx = rx;
+            }
+
+            banda = '';
+            id_estado = 1;
+            titular = signal; // En CHIRP usamos el nombre como titular para que sea clicable
+            ciudad = '';
+            id_provincia = null;
+            id_pais = 1;
+          } else {
+            // Formato RCB (Standard)
+            mem = row['Mem'] || row['mem'] || '';
+            tx = (row['TX'] || row['tx'] || '').toString().replace(',', '.').trim();
+            rx = (row['RX'] || row['rx'] || '').toString().replace(',', '.').trim();
+            mod = row['Mod'] || row['mod'] || '';
+            subt = (row['SubT(Hz)'] || row['SubT'] || row['subt'] || '').toString().replace(',', '.').trim();
+            signal = (row['SEÑAL'] || row['signal'] || '').trim() || 'No-SIGN';
+            banda = row['Banda'] || row['banda'] || '';
+            titular = row['TITULAR'] || row['titular'] || signal; // Si no hay titular, usamos la señal como fallback
+            ciudad = (row['CIUDAD / LOCALIDAD'] || row['ciudad'] || '').toString().replace(/\.+$/, '').trim();
+            
+            const estadoNombre = row['Estado'] || row['estado'] || '';
+            const provinciaNombre = row['PROVINCIA'] || row['provincia'] || '';
+            const paisNombre = row['PAIS'] || row['país'] || row['pais'] || 'Argentina';
+            
+            comentario = row['Comentario'] || row['comentario'] || row['Comment'] || '';
+            duplex = row['Duplex'] || row['duplex'] || '';
+            offset = row['Offset'] || row['offset'] || '';
+            
+            id_estado = getEstadoId(estadoNombre);
+            id_provincia = getProvinciaId(provinciaNombre);
+            id_pais = getPaisId(paisNombre);
+          }
           
           if (!tx || !rx) {
-             discarded.push({ signal: signalFinal, reason: 'Faltan frecuencias (TX/RX)' });
+             discarded.push({ signal: signal, reason: 'Faltan frecuencias (TX/RX)' });
              continue;
           }
 
-          if (isDuplicate(tx, rx, signalFinal)) {
-            discarded.push({ signal: signalFinal, reason: 'Duplicado (TX/RX/Señal ya existen)' });
+          if (isDuplicate(tx, rx, signal)) {
+            discarded.push({ signal: signal, reason: 'Ya existe (TX, RX y Señal idénticos)' });
           } else {
-            const id_estado = getEstadoId(estadoNombre);
-            const id_provincia = getProvinciaId(provinciaNombre);
-            const paisNombre = row['PAIS'] || row['país'] || row['pais'] || 'Argentina';
-            const id_pais = getPaisId(paisNombre);
-
-            insert.run(mem, tx, rx, mod, subt, signalFinal, banda, id_estado, titular, ciudad, id_provincia, id_pais);
-            imported.push(signalFinal);
-            // Agregar a la lista de existentes dinámicamente para evitar duplicados dentro del mismo CSV
-            existentes.push({ tx, rx, signal: signalFinal });
+            insert.run(mem, tx, rx, mod, subt, signal, banda, id_estado, titular, ciudad, id_provincia, id_pais,
+                       comentario, duplex, offset, tone, r_tone_freq, c_tone_freq, dtcs_code, dtcs_polarity,
+                       rx_dtcs_code, cross_mode, t_step, skip, power);
+            imported.push(signal);
+            existentes.push({ tx, rx, signal });
           }
         }
       })();

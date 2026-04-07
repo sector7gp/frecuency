@@ -4,7 +4,7 @@ const path = require('path');
 const dbPath = path.join(__dirname, 'frecuency.db');
 const db = new Database(dbPath);
 
-console.log('🚀 Iniciando script de migración consolidado (v1.2.0 -> v1.4.2)...');
+console.log('🚀 Iniciando script de migración consolidado (v1.2.0 -> v1.5.0)...');
 
 try {
     // 1. Obtener información de las columnas actuales de la tabla 'datos' para v1.3.0 y v1.4.2
@@ -65,9 +65,21 @@ try {
             // Setear Argentina (ID: 1) por defecto a los registros existentes
             db.prepare('UPDATE datos SET id_pais = 1 WHERE id_pais IS NULL').run();
         }
+        // --- MIGRACIÓN v1.5.0 (Compatibilidad CHIRP & Campo Comentario) ---
+        const chirpColumns = [
+            'comentario', 'duplex', 'offset', 'tone', 'r_tone_freq', 'c_tone_freq', 
+            'dtcs_code', 'dtcs_polarity', 'rx_dtcs_code', 'cross_mode', 't_step', 'skip', 'power'
+        ];
+
+        chirpColumns.forEach(col => {
+            if (!columns.includes(col)) {
+                console.log(`➕ [v1.5.0] Añadiendo columna: ${col}`);
+                db.prepare(`ALTER TABLE datos ADD COLUMN ${col} TEXT`).run();
+            }
+        });
     })();
 
-    console.log('✨ Migración finalizada con éxito. Tu sistema está actualizado a la v1.4.2.');
+    console.log('✨ Migración finalizada con éxito. Tu sistema está actualizado a la v1.5.0.');
 } catch (error) {
     console.error('❌ Error durante la migración:');
     console.error(error.message);
